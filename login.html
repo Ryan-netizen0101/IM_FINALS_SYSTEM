@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign in · Hallway Billing</title>
+  <link href="style.css" rel="stylesheet">
+</head>
+<body>
+<div class="page">
+
+  <!-- Left side: brand panel -->
+  <aside class="brand">
+    <div class="logo">
+      <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true">
+        <rect class="logo-bg" width="34" height="34" rx="8"/>
+        <path class="logo-fg" d="M9 25V12l8-5 8 5v13h-5v-6h-6v6z"/>
+      </svg>
+      Hallway Billing
+    </div>
+
+    <div class="pitch">
+      <h2>Rent, utilities and tenant balances in one place.</h2>
+      <p>Issue invoices, record payments and see who owes what across every unit.</p>
+    </div>
+
+    <div class="chip">
+      <span class="dot"></span>
+      <div><strong>Unit 4B · Rent received</strong>Statement closed for this month</div>
+    </div>
+  </aside>
+
+  <!-- Right side: form -->
+  <main class="form-side">
+    <button type="button" class="theme-toggle-login" id="theme-toggle" title="Toggle dark/light mode">
+      <span id="theme-toggle-icon">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+      </span>
+      <span id="theme-toggle-text">Dark Mode</span>
+    </button>
+
+    <div class="box">
+
+      <div class="mobile-logo">
+        <svg width="30" height="30" viewBox="0 0 34 34" aria-hidden="true">
+          <rect class="logo-bg" width="34" height="34" rx="8"/>
+          <path class="logo-fg" d="M9 25V12l8-5 8 5v13h-5v-6h-6v6z"/>
+        </svg>
+        Hallway Billing
+      </div>
+
+      <h1 id="title">Staff sign in</h1>
+      <p class="subtitle" id="sub">Manage tenant accounts, invoices and payments.</p>
+
+      <div class="tabs">
+        <button type="button" id="t-staff" class="active">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          <span>Staff</span>
+        </button>
+        <button type="button" id="t-admin">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          <span>Admin</span>
+        </button>
+      </div>
+
+
+      <form id="f" novalidate>
+        <div class="field">
+          <label for="id" id="idl">Staff email</label>
+          <input type="email" id="id" autocomplete="username" placeholder="staff@property.com">
+          <div class="error" id="e1">Enter a valid email address, like staff@property.com.</div>
+        </div>
+
+        <div class="field">
+          <label for="pw">Password</label>
+          <div class="password-row">
+            <input type="password" id="pw" autocomplete="current-password" placeholder="Enter your password">
+            <button type="button" class="show-btn" id="show">Show</button>
+          </div>
+          <div class="error" id="e2">Password must be at least 8 characters.</div>
+        </div>
+
+        <div class="options">
+          <label><input type="checkbox" id="rem"> Keep me signed in</label>
+          <a href="#" id="forgot">Forgot password?</a>
+        </div>
+
+        <button type="submit" class="login-btn" id="go">Sign in as staff</button>
+        <div class="message hidden" id="note"></div>
+      </form>
+
+      <p class="footer-text">
+        Tenants: use the Tenant Portal to view and pay your bills.<br>
+        Need access? Ask your property administrator.
+      </p>
+    </div>
+  </main>
+
+</div>
+
+<script>
+  // Get the elements we need
+  var form = document.getElementById("f");
+  var emailInput = document.getElementById("id");
+  var passInput = document.getElementById("pw");
+  var emailError = document.getElementById("e1");
+  var passError = document.getElementById("e2");
+  var showBtn = document.getElementById("show");
+  var loginBtn = document.getElementById("go");
+  var message = document.getElementById("note");
+  var staffTab = document.getElementById("t-staff");
+  var adminTab = document.getElementById("t-admin");
+
+  var role = "staff"; // current role
+
+  // Remove old errors and messages
+  function clearErrors() {
+    emailInput.classList.remove("is-invalid");
+    passInput.classList.remove("is-invalid");
+    emailError.classList.remove("show");
+    passError.classList.remove("show");
+    emailError.textContent = "Enter a valid email address, like staff@property.com.";
+    passError.textContent = "Password must be at least 8 characters.";
+    message.className = "message hidden";
+  }
+
+  // Clear errors dynamically on input
+  emailInput.oninput = function() {
+    emailInput.classList.remove("is-invalid");
+    emailError.classList.remove("show");
+  };
+  passInput.oninput = function() {
+    passInput.classList.remove("is-invalid");
+    passError.classList.remove("show");
+  };
+
+  // Switch between staff and admin
+  function setRole(newRole) {
+    role = newRole;
+
+    if (role == "staff") {
+      document.getElementById("title").textContent = "Staff sign in";
+      document.getElementById("sub").textContent = "Manage tenant accounts, invoices and payments.";
+      document.getElementById("idl").textContent = "Staff email";
+      emailInput.placeholder = "staff@property.com";
+      loginBtn.textContent = "Sign in as staff";
+      staffTab.classList.add("active");
+      adminTab.classList.remove("active");
+    } else {
+      document.getElementById("title").textContent = "Admin sign in";
+      document.getElementById("sub").textContent = "Manage users, billing rates, units and reports.";
+      document.getElementById("idl").textContent = "Admin email";
+      emailInput.placeholder = "admin@property.com";
+      loginBtn.textContent = "Sign in as admin";
+      adminTab.classList.add("active");
+      staffTab.classList.remove("active");
+    }
+
+    clearErrors();
+  }
+
+  staffTab.onclick = function () { setRole("staff"); };
+  adminTab.onclick = function () { setRole("admin"); };
+
+  // Show or hide the password
+  showBtn.onclick = function () {
+    if (passInput.type == "password") {
+      passInput.type = "text";
+      showBtn.textContent = "Hide";
+    } else {
+      passInput.type = "password";
+      showBtn.textContent = "Show";
+    }
+  };
+
+  // Forgot password link
+  document.getElementById("forgot").onclick = function (e) {
+    e.preventDefault();
+    message.className = "message success";
+    message.textContent = "Contact your property administrator to reset your password.";
+  };
+
+  // When the form is submitted
+  form.onsubmit = async function (e) {
+    e.preventDefault(); // stop the page from reloading
+
+    var email = emailInput.value.trim();
+    var password = passInput.value;
+    var valid = true;
+
+    clearErrors();
+
+    // check email (must have @ and a dot)
+    if (email.indexOf("@") == -1 || email.indexOf(".") == -1) {
+      emailInput.classList.add("is-invalid");
+      emailError.textContent = "Enter a valid email address, like staff@property.com.";
+      emailError.classList.add("show");
+      valid = false;
+    }
+
+    // check password length
+    if (password.length < 8) {
+      passInput.classList.add("is-invalid");
+      passError.textContent = "Password must be at least 8 characters.";
+      passError.classList.add("show");
+      valid = false;
+    }
+
+    if (valid == false) {
+      return; // stop here, show the errors
+    }
+
+    // Connect to real backend
+    loginBtn.disabled = true;
+    var originalBtnText = loginBtn.textContent;
+    loginBtn.textContent = "Signing in...";
+
+    try {
+      var response = await fetch("api/auth.php?action=login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          password: password,
+          role: role
+        })
+      });
+
+      var result = await response.json();
+
+      if (response.ok && result.success) {
+        message.className = "message success";
+        message.textContent = "Signed in successfully! Loading dashboard...";
+        sessionStorage.setItem("user", JSON.stringify(result.data));
+        localStorage.setItem("user", JSON.stringify(result.data));
+
+        setTimeout(function () {
+          window.location.href = "dashboard.html";
+        }, 600);
+      } else {
+        message.className = "message error";
+        message.textContent = result.message || "Invalid credentials.";
+
+        var handled = false;
+        if (result.data && result.data.errors) {
+          if (result.data.errors.email) {
+            emailInput.classList.add("is-invalid");
+            emailError.textContent = result.data.errors.email;
+            emailError.classList.add("show");
+            handled = true;
+          }
+          if (result.data.errors.password) {
+            passInput.classList.add("is-invalid");
+            passError.textContent = result.data.errors.password;
+            passError.classList.add("show");
+            handled = true;
+          }
+        }
+
+        // Fallback keyword detection for direct visual field validation
+        if (!handled && result.message) {
+          var msg = result.message.toLowerCase();
+          if (msg.indexOf("password") !== -1) {
+            passInput.classList.add("is-invalid");
+            passError.textContent = result.message;
+            passError.classList.add("show");
+          } else if (msg.indexOf("email") !== -1 || msg.indexOf("account") !== -1) {
+            emailInput.classList.add("is-invalid");
+            emailError.textContent = result.message;
+            emailError.classList.add("show");
+          }
+        }
+      }
+    } catch (err) {
+      message.className = "message error";
+      message.textContent = "Unable to connect to server. Ensure MySQL and Apache are running in XAMPP.";
+    } finally {
+      loginBtn.disabled = false;
+      loginBtn.textContent = originalBtnText;
+    }
+  };
+
+  // Dark Mode / Light Mode Management
+  function initTheme() {
+    var savedTheme = localStorage.getItem("hallway_theme");
+    var prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+    var theme = savedTheme ? savedTheme : (prefersDark ? "dark" : "light");
+    applyTheme(theme);
+  }
+
+  function applyTheme(theme) {
+    var isDark = (theme === "dark");
+    if (isDark) {
+      document.body.classList.add("dark-mode");
+    } else {
+      document.body.classList.remove("dark-mode");
+    }
+    localStorage.setItem("hallway_theme", theme);
+    updateThemeToggleUI(isDark);
+  }
+
+  function updateThemeToggleUI(isDark) {
+    var iconEl = document.getElementById("theme-toggle-icon");
+    var textEl = document.getElementById("theme-toggle-text");
+    var btn = document.getElementById("theme-toggle");
+    if (!btn) return;
+
+    if (isDark) {
+      if (iconEl) {
+        iconEl.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>';
+      }
+      if (textEl) textEl.textContent = "Light Mode";
+      btn.title = "Switch to Light Mode";
+    } else {
+      if (iconEl) {
+        iconEl.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>';
+      }
+      if (textEl) textEl.textContent = "Dark Mode";
+      btn.title = "Switch to Dark Mode";
+    }
+  }
+
+  var themeToggleBtn = document.getElementById("theme-toggle");
+  if (themeToggleBtn) {
+    themeToggleBtn.onclick = function() {
+      var isDark = document.body.classList.contains("dark-mode");
+      applyTheme(isDark ? "light" : "dark");
+    };
+  }
+
+  initTheme();
+</script>
+</body>
+</html>

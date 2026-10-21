@@ -1,0 +1,1638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard · Hallway Billing</title>
+  <link href="dashboard.css" rel="stylesheet">
+</head>
+<body>
+<div class="app">
+
+  <aside class="sidebar">
+    <div class="logo">
+      <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true">
+        <rect class="logo-bg" width="34" height="34" rx="8"/>
+        <path class="logo-fg" d="M9 25V12l8-5 8 5v13h-5v-6h-6v6z"/>
+      </svg>
+      Hallway Billing
+    </div>
+
+    <nav class="nav" id="nav">
+      <button type="button" class="active" data-view="dashboard">
+        <svg class="nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+        <span>Dashboard</span>
+      </button>
+      <button type="button" data-view="tenants">
+        <svg class="nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+        <span>Tenants</span>
+      </button>
+      <button type="button" data-view="units">
+        <svg class="nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+        <span>Units</span>
+      </button>
+      <button type="button" data-view="payments">
+        <svg class="nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line><line x1="6" y1="15" x2="10" y2="15"></line></svg>
+        <span>Rent payments</span>
+      </button>
+      <button type="button" data-view="bills">
+        <svg class="nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+        <span>Utility bills</span>
+      </button>
+      <button type="button" data-view="reports">
+        <svg class="nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+        <span>Reports</span>
+      </button>
+      <button type="button" data-view="deleted" id="nav-deleted" style="display:none;">
+        <svg class="nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+        <span>Deleted records</span>
+      </button>
+    </nav>
+  </aside>
+
+  <main class="content">
+
+    <header class="topbar">
+      <div>
+        <h1 id="page-title">Dashboard</h1>
+        <p class="subtitle" id="page-sub">Overview of tenants, rent and utility bills.</p>
+      </div>
+      <div class="topbar-actions">
+        <button type="button" class="theme-toggle" id="theme-toggle" title="Toggle dark/light mode">
+          <span class="theme-icon" id="theme-toggle-icon">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+          </span>
+          <span class="theme-text" id="theme-toggle-text">Dark Mode</span>
+        </button>
+
+        <div class="user-menu-wrap" id="user-menu-wrap">
+          <button type="button" class="chip chip-btn" id="user-chip-btn" aria-haspopup="true" aria-expanded="false" title="Account menu">
+            <span class="dot"></span>
+            <div class="chip-info">
+              <strong id="user-role-display">ADMIN</strong>
+              <div id="user-name-display" style="font-size:12px; color:#64748b;">Property Administrator</div>
+            </div>
+            <svg class="chip-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+
+          <div class="user-dropdown hidden" id="user-dropdown">
+            <div class="dropdown-header">
+              <span class="dropdown-user-role" id="dropdown-role">ADMIN</span>
+              <span class="dropdown-user-name" id="dropdown-name">Property Administrator</span>
+            </div>
+            <div class="dropdown-divider"></div>
+            <button type="button" class="dropdown-item logout-action" id="logout-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+              </svg>
+              <span>Log out</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="message hidden" id="note"></div>
+
+    <!-- Dashboard View -->
+    <section class="view" id="view-dashboard">
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-header">
+            <span>Active tenants</span>
+            <div class="stat-icon stat-icon-tenants">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            </div>
+          </div>
+          <strong id="stat-tenants">0</strong>
+        </div>
+        <div class="stat">
+          <div class="stat-header">
+            <span>Occupied units</span>
+            <div class="stat-icon stat-icon-units">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+            </div>
+          </div>
+          <strong id="stat-units">0</strong>
+        </div>
+        <div class="stat">
+          <div class="stat-header">
+            <span>Rent collected</span>
+            <div class="stat-icon stat-icon-rent">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line><line x1="6" y1="15" x2="10" y2="15"></line></svg>
+            </div>
+          </div>
+          <strong id="stat-collected">0</strong>
+        </div>
+        <div class="stat">
+          <div class="stat-header">
+            <span>Unpaid utility bills</span>
+            <div class="stat-icon stat-icon-bills">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+            </div>
+          </div>
+          <strong id="stat-unpaid">0</strong>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h2>
+            <svg class="card-title-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line><line x1="6" y1="15" x2="10" y2="15"></line></svg>
+            Recent rent payments
+          </h2>
+          <div class="table-wrap"><table id="table-recent"></table></div>
+        </div>
+        <div class="card">
+          <h2>
+            <svg class="card-title-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+            Unpaid utility bills
+          </h2>
+          <div class="table-wrap"><table id="table-unpaid"></table></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tenants View -->
+    <section class="view hidden" id="view-tenants">
+      <div class="toolbar">
+        <input type="text" id="search-tenants" placeholder="Search tenants">
+        <select id="filter-tenants"></select>
+        <button type="button" class="btn btn-light btn-unhide" id="unhide-tenants" data-act="unhide-all" data-name="tenants" style="display:none;"><svg class="btn-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> <span>Unhide all</span></button>
+        <button type="button" class="btn btn-light btn-manage-hidden" id="manage-hidden-tenants" data-act="manage-hidden" data-name="tenants" style="display:none;"><svg class="btn-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg> <span>Unhide specific...</span></button>
+        <button type="button" class="btn" data-act="add" data-name="tenants">Add tenant</button>
+      </div>
+      <div class="card table-wrap"><table id="table-tenants"></table></div>
+    </section>
+
+    <!-- Units View -->
+    <section class="view hidden" id="view-units">
+      <div class="toolbar">
+        <input type="text" id="search-units" placeholder="Search units">
+        <select id="filter-units"></select>
+        <button type="button" class="btn btn-light btn-unhide" id="unhide-units" data-act="unhide-all" data-name="units" style="display:none;"><svg class="btn-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> <span>Unhide all</span></button>
+        <button type="button" class="btn btn-light btn-manage-hidden" id="manage-hidden-units" data-act="manage-hidden" data-name="units" style="display:none;"><svg class="btn-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg> <span>Unhide specific...</span></button>
+        <button type="button" class="btn" id="btn-add-unit" data-act="add" data-name="units">Add unit</button>
+      </div>
+      <div class="card table-wrap"><table id="table-units"></table></div>
+    </section>
+
+    <!-- Payments View -->
+    <section class="view hidden" id="view-payments">
+      <div class="toolbar">
+        <input type="text" id="search-payments" placeholder="Search payments">
+        <select id="filter-payments"></select>
+        <button type="button" class="btn btn-light btn-unhide" id="unhide-payments" data-act="unhide-all" data-name="payments" style="display:none;"><svg class="btn-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> <span>Unhide all</span></button>
+        <button type="button" class="btn btn-light btn-manage-hidden" id="manage-hidden-payments" data-act="manage-hidden" data-name="payments" style="display:none;"><svg class="btn-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg> <span>Unhide specific...</span></button>
+        <button type="button" class="btn" data-act="add" data-name="payments">Record payment</button>
+      </div>
+      <div class="card table-wrap"><table id="table-payments"></table></div>
+    </section>
+
+    <!-- Bills View -->
+    <section class="view hidden" id="view-bills">
+      <div class="toolbar">
+        <input type="text" id="search-bills" placeholder="Search bills">
+        <select id="filter-bills"></select>
+        <button type="button" class="btn btn-light btn-unhide" id="unhide-bills" data-act="unhide-all" data-name="bills" style="display:none;"><svg class="btn-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> <span>Unhide all</span></button>
+        <button type="button" class="btn btn-light btn-manage-hidden" id="manage-hidden-bills" data-act="manage-hidden" data-name="bills" style="display:none;"><svg class="btn-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg> <span>Unhide specific...</span></button>
+        <button type="button" class="btn" data-act="add" data-name="bills">Add bill</button>
+      </div>
+      <div class="card table-wrap"><table id="table-bills"></table></div>
+    </section>
+
+    <!-- Reports View -->
+    <section class="view hidden" id="view-reports">
+      <div class="grid-2">
+        <div class="card">
+          <h2>
+            <svg class="card-title-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+            Billing summary
+          </h2>
+          <div class="table-wrap"><table id="table-summary"></table></div>
+        </div>
+        <div class="card">
+          <h2>
+            <svg class="card-title-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            Tenant balances
+          </h2>
+          <div class="table-wrap"><table id="table-balances"></table></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Deleted Records View (Admin Only) -->
+    <section class="view hidden" id="view-deleted">
+      <div class="toolbar">
+        <input type="text" id="search-deleted" placeholder="Search deleted records">
+        <select id="filter-deleted">
+          <option value="">All record types</option>
+          <option value="tenants">Tenants</option>
+          <option value="units">Units</option>
+          <option value="payments">Rent payments</option>
+          <option value="bills">Utility bills</option>
+        </select>
+        <div style="margin-left:auto; display:flex; gap:8px;">
+          <button type="button" class="btn btn-light" id="btn-restore-all" title="Restore all archived records in this view" disabled>
+            <svg class="btn-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+            <span>Restore all</span>
+          </button>
+          <button type="button" class="btn btn-light" id="btn-purge-all" title="Permanently clear archive" disabled>
+            <svg class="btn-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            <span>Purge all</span>
+          </button>
+        </div>
+      </div>
+      <div class="card table-wrap"><table id="table-deleted"></table></div>
+    </section>
+
+  </main>
+</div>
+
+<!-- Modal Dialog -->
+<div class="overlay hidden" id="overlay">
+  <div class="modal">
+    <h2 id="modal-title"></h2>
+    <form id="form" novalidate>
+      <div id="fields"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-light" id="cancel">Cancel</button>
+        <button type="submit" class="btn" id="save-btn">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Manage Hidden Records Modal -->
+<div class="overlay hidden" id="hidden-overlay">
+  <div class="modal">
+    <h2 id="hidden-modal-title">Hidden records</h2>
+    <p class="subtitle" style="margin-bottom: 16px;">Select an individual record to restore or unhide all.</p>
+    <div id="hidden-items-list" style="margin-bottom: 20px; max-height: 250px; overflow-y: auto;"></div>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-light" id="hidden-close">Close</button>
+      <button type="button" class="btn" id="hidden-unhide-all">Unhide all</button>
+    </div>
+  </div>
+</div>
+
+<!-- Styled Confirmation Popup Modal -->
+<div class="overlay hidden" id="confirm-overlay">
+  <div class="modal confirm-modal">
+    <div class="confirm-modal-icon" id="confirm-icon-wrap"></div>
+    <h2 id="confirm-title" style="margin-bottom: 8px;">Confirm Action</h2>
+    <p id="confirm-message" class="subtitle" style="margin-bottom: 16px; font-size: 14.5px; line-height: 1.5;"></p>
+    <div id="confirm-details" class="confirm-details-box hidden"></div>
+    <div class="modal-actions" style="margin-top: 24px;">
+      <button type="button" class="btn btn-light" id="confirm-cancel-btn">Cancel</button>
+      <button type="button" class="btn btn-danger" id="confirm-ok-btn">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Live in-memory cache synchronized with MySQL database
+  var db = {
+    units: [],
+    tenants: [],
+    payments: [],
+    bills: []
+  };
+
+  var currentUser = {
+    role: "admin",
+    full_name: "Property Administrator"
+  };
+
+  var defaultUnitRates = {
+    "Studio": 5000,
+    "Single Room": 3500,
+    "1-Bedroom": 6000,
+    "2-Bedroom": 7000,
+    "Family 2BR": 7500,
+    "Bedspace": 2500
+  };
+
+  var schema = {
+    tenants: {
+      title: "Tenant",
+      pk: "id",
+      filter: ["status", ["Active", "Moved out"]],
+      cols: [["id", "ID"], ["name", "Name"], ["contact", "Mobile"], ["unit_number", "Unit", "u"], ["moveIn", "Move-in date"], ["status", "Status", "b"]],
+      fields: [
+        { k: "name", l: "Full name", t: "text", req: 1 },
+        { k: "contact", l: "Mobile number", t: "text", req: 1, pat: /^09\d{9}$/, msg: "Use 11 digits starting with 09." },
+        { k: "unit", l: "Unit", t: "select", ref: 1, o: function (currentUnitId) { return unitOptions(currentUnitId).list; } },
+        { k: "moveIn", l: "Move-in date", t: "date", req: 1 },
+        { k: "status", l: "Status", t: "select", o: function () { return list(["Active", "Moved out"]); } }
+      ]
+    },
+    units: {
+      title: "Unit",
+      pk: "number",
+      filter: ["status", ["Occupied", "Available"]],
+      cols: [["number", "Unit no."], ["type", "Type"], ["rent", "Monthly rent", "m"], ["status", "Status", "b"]],
+      fields: [
+        { k: "number", l: "Unit number", t: "text", req: 1 },
+        { k: "type", l: "Type", t: "select", o: function () { return list(["Studio", "Single Room", "1-Bedroom", "2-Bedroom", "Family 2BR", "Bedspace"]); } },
+        { k: "rent", l: "Monthly rent (PHP)", t: "number", req: 1 },
+        { k: "status", l: "Status", t: "select", o: function () { return list(["Available", "Occupied"]); } }
+      ]
+    },
+    payments: {
+      title: "Rent payment",
+      pk: "id",
+      filter: ["method", ["Cash", "GCash", "Bank Transfer"]],
+      cols: [["id", "ID"], ["tenant_name", "Tenant", "t"], ["month", "Rent month"], ["amount", "Amount", "m"], ["date", "Date paid"], ["method", "Method"]],
+      fields: [
+        { k: "tenant", l: "Tenant", t: "select", ref: 1, o: function () { return tenantOptions(); } },
+        { k: "month", l: "Rent month", t: "month", req: 1 },
+        { k: "amount", l: "Amount (PHP)", t: "number", req: 1 },
+        { k: "date", l: "Date paid", t: "date", req: 1 },
+        { k: "method", l: "Payment method", t: "select", o: function () { return list(["Cash", "GCash", "Bank Transfer"]); } }
+      ]
+    },
+    bills: {
+      title: "Utility bill",
+      pk: "id",
+      filter: ["status", ["Paid", "Unpaid", "Overdue", "Partial"]],
+      cols: [["id", "ID"], ["tenant_name", "Tenant", "t"], ["type", "Utility"], ["period", "Period"], ["amount", "Amount", "m"], ["due", "Due date"], ["status", "Status", "b"]],
+      fields: [
+        { k: "tenant", l: "Tenant", t: "select", ref: 1, o: function () { return tenantOptions(); } },
+        { k: "type", l: "Utility", t: "select", o: function () { return list(["Water", "Electricity", "Internet"]); } },
+        { k: "period", l: "Billing period", t: "month", req: 1 },
+        { k: "amount", l: "Amount (PHP)", t: "number", req: 1 },
+        { k: "due", l: "Due date", t: "date", req: 1 },
+        { k: "status", l: "Status", t: "select", o: function () { return list(["Unpaid", "Paid", "Overdue", "Partial"]); } }
+      ]
+    }
+  };
+
+  var titles = {
+    dashboard: ["Dashboard", "Overview of tenants, rent and utility bills."],
+    tenants: ["Tenants", "Add and edit tenant records."],
+    units: ["Units", "View rooms, rates and availability."],
+    payments: ["Rent payments", "Record and review rent payments."],
+    bills: ["Utility bills", "Track water, electricity and internet bills."],
+    reports: ["Reports", "Billing totals and tenant balances."],
+    deleted: ["Deleted records", "Admin archive. Restore deleted records or permanently purge them."]
+  };
+
+  var editing = { name: "", id: null };
+  var noteTimer;
+  var sortState = {};
+  var hiddenRows = {};
+  var simpleTableCache = {};
+  var currentManagingHiddenTable = null;
+
+  // Session & Auth Handling
+  async function checkAuth() {
+    try {
+      var res = await fetch("api/auth.php?action=check");
+      var result = await res.json();
+      if (!result.success) {
+        window.location.href = "login.html";
+        return;
+      }
+      currentUser = result.data;
+      applyUserRole();
+    } catch (e) {
+      var cached = localStorage.getItem("user");
+      if (cached) {
+        currentUser = JSON.parse(cached);
+        applyUserRole();
+      }
+    }
+  }
+
+  function applyUserRole() {
+    var roleStr = (currentUser.role || "ADMIN").toUpperCase();
+    var nameStr = currentUser.full_name || "Property Administrator";
+    document.getElementById("user-role-display").textContent = roleStr;
+    document.getElementById("user-name-display").textContent = nameStr;
+    var dropRole = document.getElementById("dropdown-role");
+    if (dropRole) dropRole.textContent = roleStr;
+    var dropName = document.getElementById("dropdown-name");
+    if (dropName) dropName.textContent = nameStr;
+
+    // Staff cannot add units (admin only)
+    var addUnitBtn = document.getElementById("btn-add-unit");
+    if (addUnitBtn) {
+      if (currentUser.role === "staff") {
+        addUnitBtn.style.display = "none";
+      } else {
+        addUnitBtn.style.display = "inline-flex";
+      }
+    }
+
+    // Deleted records view is Admin only
+    var navDeleted = document.getElementById("nav-deleted");
+    if (navDeleted) {
+      if (currentUser.role === "admin") {
+        navDeleted.style.display = "flex";
+      } else {
+        navDeleted.style.display = "none";
+      }
+    }
+
+    // Refresh action buttons based on current user role
+    renderTable("tenants");
+    renderTable("units");
+    renderTable("payments");
+    renderTable("bills");
+  }
+
+  // Topbar User Menu Dropdown Toggle
+  var userChipBtn = document.getElementById("user-chip-btn");
+  var userDropdown = document.getElementById("user-dropdown");
+
+  if (userChipBtn && userDropdown) {
+    userChipBtn.onclick = function (e) {
+      e.stopPropagation();
+      var isHidden = userDropdown.classList.contains("hidden");
+      if (isHidden) {
+        userDropdown.classList.remove("hidden");
+        userChipBtn.classList.add("active");
+        userChipBtn.setAttribute("aria-expanded", "true");
+      } else {
+        userDropdown.classList.add("hidden");
+        userChipBtn.classList.remove("active");
+        userChipBtn.setAttribute("aria-expanded", "false");
+      }
+    };
+
+    document.addEventListener("click", function (e) {
+      if (!userDropdown.classList.contains("hidden")) {
+        if (!e.target.closest("#user-menu-wrap")) {
+          userDropdown.classList.add("hidden");
+          userChipBtn.classList.remove("active");
+          userChipBtn.setAttribute("aria-expanded", "false");
+        }
+      }
+    });
+  }
+
+  document.getElementById("logout-btn").onclick = async function (e) {
+    e.preventDefault();
+    try {
+      await fetch("api/auth.php?action=logout");
+    } catch (err) {}
+    localStorage.removeItem("user");
+    sessionStorage.removeItem("user");
+    window.location.href = "login.html";
+  };
+
+  function find(rows, id) {
+    for (var i = 0; i < rows.length; i++) {
+      if (rows[i].id == id) { return rows[i]; }
+    }
+    return null;
+  }
+
+  function tenantName(id) {
+    var t = find(db.tenants, id);
+    return t ? t.name : "-";
+  }
+
+  function unitNumber(id) {
+    var u = find(db.units, id);
+    return u ? u.number : "-";
+  }
+
+  function peso(n) {
+    return "PHP " + Number(n).toLocaleString("en-PH", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function esc(s) {
+    return String(s === null || s === undefined ? "" : s)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  function list(items) {
+    var out = [];
+    for (var i = 0; i < items.length; i++) { out.push([items[i], items[i]]); }
+    return out;
+  }
+
+  function tenantOptions() {
+    var out = [];
+    for (var i = 0; i < db.tenants.length; i++) {
+      out.push([db.tenants[i].id, db.tenants[i].name]);
+    }
+    return out;
+  }
+
+  // Filter out occupied units when assigning a unit to a tenant
+  function unitOptions(currentUnitId) {
+    var out = [[0, "None / Not assigned"]];
+    var availableCount = 0;
+    for (var i = 0; i < db.units.length; i++) {
+      var u = db.units[i];
+      var isCurrent = currentUnitId && (u.id == currentUnitId);
+      var isVacant = (u.status === "Available" || u.status === "Vacant");
+      if (isVacant || isCurrent) {
+        var label = u.number + " (" + u.type + " - " + peso(u.rent) + (isCurrent && !isVacant ? " - Current" : "") + ")";
+        out.push([u.id, label]);
+        if (isVacant) availableCount++;
+      }
+    }
+    return { list: out, availableCount: availableCount };
+  }
+
+  function note(text, type) {
+    var box = document.getElementById("note");
+    box.className = "message " + (type || "success");
+    box.textContent = text;
+    clearTimeout(noteTimer);
+    noteTimer = setTimeout(function () { box.className = "message hidden"; }, 4000);
+  }
+
+  function showConfirmModal(options) {
+    return new Promise(function(resolve) {
+      var overlay = document.getElementById("confirm-overlay");
+      var titleEl = document.getElementById("confirm-title");
+      var msgEl = document.getElementById("confirm-message");
+      var detailsEl = document.getElementById("confirm-details");
+      var okBtn = document.getElementById("confirm-ok-btn");
+      var cancelBtn = document.getElementById("confirm-cancel-btn");
+      var iconWrap = document.getElementById("confirm-icon-wrap");
+
+      titleEl.textContent = options.title || "Confirm Action";
+      msgEl.textContent = options.message || "Are you sure you want to proceed?";
+
+      if (options.details) {
+        detailsEl.textContent = options.details;
+        detailsEl.classList.remove("hidden");
+      } else {
+        detailsEl.classList.add("hidden");
+        detailsEl.textContent = "";
+      }
+
+      okBtn.textContent = options.okText || "Confirm";
+      cancelBtn.textContent = options.cancelText || "Cancel";
+
+      var variant = options.variant || "danger";
+      okBtn.className = "btn " + (variant === "danger" ? "btn-danger" : (variant === "success" ? "" : ""));
+
+      iconWrap.className = "confirm-modal-icon " + variant;
+      if (variant === "danger") {
+        iconWrap.innerHTML = '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>';
+      } else if (variant === "success") {
+        iconWrap.innerHTML = '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>';
+      } else {
+        iconWrap.innerHTML = '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>';
+      }
+
+      overlay.classList.remove("hidden");
+
+      function cleanup() {
+        overlay.classList.add("hidden");
+        okBtn.onclick = null;
+        cancelBtn.onclick = null;
+        overlay.onclick = null;
+      }
+
+      okBtn.onclick = function() {
+        cleanup();
+        resolve(true);
+      };
+
+      cancelBtn.onclick = function() {
+        cleanup();
+        resolve(false);
+      };
+
+      overlay.onclick = function(e) {
+        if (e.target === overlay) {
+          cleanup();
+          resolve(false);
+        }
+      };
+    });
+  }
+
+  function cell(row, col) {
+    var v = row[col[0]], f = col[2];
+    if (f == "m") { return peso(v); }
+    if (f == "t") { return esc(row.tenant_name || tenantName(v)); }
+    if (f == "u") { return esc(row.unit_number || unitNumber(v)); }
+    if (f == "b") {
+      var badgeClass = String(v).toLowerCase().replace(/ /g, "-");
+      return '<span class="badge b-' + badgeClass + '">' + esc(v) + "</span>";
+    }
+    return esc(v);
+  }
+
+  function compareSort(va, vb, dir) {
+    if (va === null || va === undefined) va = "";
+    if (vb === null || vb === undefined) vb = "";
+
+    // Numeric comparison if both are actual numbers
+    if (typeof va === "number" && typeof vb === "number") {
+      return dir === "asc" ? va - vb : vb - va;
+    }
+
+    var sa = String(va).trim();
+    var sb = String(vb).trim();
+
+    // Date comparison (YYYY-MM-DD or YYYY-MM)
+    var datePattern = /^\d{4}-\d{2}(-\d{2})?$/;
+    if (datePattern.test(sa) && datePattern.test(sb)) {
+      return dir === "asc" ? sa.localeCompare(sb) : sb.localeCompare(sa);
+    }
+
+    // Currency or numeric string comparison (e.g. "PHP 5,000.00" or "1,200.50")
+    var cleanA = sa.replace(/^PHP\s*/i, "").replace(/,/g, "");
+    var cleanB = sb.replace(/^PHP\s*/i, "").replace(/,/g, "");
+    var numA = Number(cleanA);
+    var numB = Number(cleanB);
+    if (!isNaN(numA) && !isNaN(numB) && sa !== "" && sb !== "" && !datePattern.test(sa)) {
+      return dir === "asc" ? numA - numB : numB - numA;
+    }
+
+    // Natural alphanumeric comparison
+    return dir === "asc"
+      ? sa.localeCompare(sb, undefined, { numeric: true, sensitivity: "base" })
+      : sb.localeCompare(sa, undefined, { numeric: true, sensitivity: "base" });
+  }
+
+  function simpleTable(id, heads, rows, sortable) {
+    if (sortable) {
+      if (!simpleTableCache[id] || simpleTableCache[id].rawRows !== rows) {
+        simpleTableCache[id] = { heads: heads, rows: rows.slice(), rawRows: rows };
+      }
+    }
+
+    var st = sortState[id];
+    if (sortable && st) {
+      var colIdx = parseInt(st.col, 10);
+      var dir = st.dir;
+      rows = rows.slice().sort(function(a, b) {
+        var sa = String(a[colIdx] == null ? "" : a[colIdx]).replace(/<[^>]*>/g, "").trim();
+        var sb = String(b[colIdx] == null ? "" : b[colIdx]).replace(/<[^>]*>/g, "").trim();
+        return compareSort(sa, sb, dir);
+      });
+    }
+
+    var html = "<thead><tr>";
+    for (var i = 0; i < heads.length; i++) {
+      // Only the first column (Primary Key / Identifier) is sortable
+      if (sortable && i === 0) {
+        var arrow = "&#8597;";
+        var cls = "sort-icon";
+        if (st && st.col === String(i)) {
+          arrow = st.dir === "asc" ? "&#9650;" : "&#9660;";
+          cls += " active";
+        }
+        html += '<th class="sortable-th" data-table="' + id + '" data-col="' + i + '" title="Sort by ' + heads[i] + '">' +
+          '<div class="th-content">' +
+            '<span>' + heads[i] + '</span>' +
+            '<span class="' + cls + '">' + arrow + '</span>' +
+          '</div>' +
+        '</th>';
+      } else {
+        html += "<th>" + heads[i] + "</th>";
+      }
+    }
+    html += "</tr></thead><tbody>";
+    if (!rows || rows.length == 0) {
+      html += '<tr><td colspan="' + heads.length + '" class="empty">Nothing to show yet.</td></tr>';
+    } else {
+      for (var r = 0; r < rows.length; r++) {
+        html += "<tr>";
+        for (var c = 0; c < rows[r].length; c++) { html += "<td>" + rows[r][c] + "</td>"; }
+        html += "</tr>";
+      }
+    }
+    document.getElementById(id).innerHTML = html + "</tbody>";
+  }
+
+  function renderTable(name) {
+    var s = schema[name];
+    var q = document.getElementById("search-" + name).value.trim().toLowerCase();
+    var f = document.getElementById("filter-" + name).value;
+    var html = "<thead><tr>";
+    var count = 0;
+    var st = sortState[name];
+
+    // Primary Key Column Sorting ONLY
+    for (var i = 0; i < s.cols.length; i++) {
+      var colKey = s.cols[i][0];
+      var isPk = (colKey === s.pk);
+
+      if (isPk) {
+        var arrow = "&#8597;";
+        var cls = "sort-icon";
+        if (st && st.col === colKey) {
+          arrow = st.dir === "asc" ? "&#9650;" : "&#9660;";
+          cls += " active";
+        }
+        html += '<th class="sortable-th" data-table="' + name + '" data-col="' + colKey + '" title="Sort by primary key (' + s.cols[i][1] + ')">' +
+          '<div class="th-content">' +
+            '<span>' + s.cols[i][1] + '</span>' +
+            '<span class="' + cls + '">' + arrow + '</span>' +
+          '</div>' +
+        '</th>';
+      } else {
+        html += '<th><span>' + s.cols[i][1] + '</span></th>';
+      }
+    }
+    html += "<th>Actions</th></tr></thead><tbody>";
+
+    var rows = db[name].slice();
+    if (st) {
+      var sortCol = st.col;
+      var sortDir = st.dir;
+      rows.sort(function(a, b) {
+        var va, vb;
+        var colDef = null;
+        for (var ci = 0; ci < s.cols.length; ci++) {
+          if (s.cols[ci][0] === sortCol) { colDef = s.cols[ci]; break; }
+        }
+        if (colDef && colDef[2] === "t") {
+          va = a.tenant_name || tenantName(a[sortCol]);
+          vb = b.tenant_name || tenantName(b[sortCol]);
+        } else if (colDef && colDef[2] === "u") {
+          va = a.unit_number || unitNumber(a[sortCol]);
+          vb = b.unit_number || unitNumber(b[sortCol]);
+        } else {
+          va = a[sortCol];
+          vb = b[sortCol];
+        }
+        return compareSort(va, vb, sortDir);
+      });
+    }
+
+    var todayStr = new Date().toISOString().slice(0, 10);
+
+    for (var r = 0; r < rows.length; r++) {
+      var row = rows[r];
+      if (hiddenRows[name] && hiddenRows[name][row.id]) { continue; }
+      var text = "";
+      var tds = "";
+
+      for (var c = 0; c < s.cols.length; c++) {
+        var shown = cell(row, s.cols[c]);
+        text += " " + shown.replace(/<[^>]*>/g, "");
+        tds += "<td>" + shown + "</td>";
+      }
+
+      if (q != "" && text.toLowerCase().indexOf(q) == -1) { continue; }
+      
+      // Case-insensitive status filtering (Fixes Moved Out filter bug)
+      if (f != "") {
+        var rowVal = String(row[s.filter[0]] || "").trim().toLowerCase();
+        var filterVal = String(f).trim().toLowerCase();
+        if (rowVal !== filterVal) { continue; }
+      }
+
+      count++;
+
+      // Role-based actions configuration
+      var actionButtons = "";
+      var editIcon = '<svg class="btn-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>';
+      var hideIcon = '<svg class="btn-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>';
+      var deleteIcon = '<svg class="btn-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>';
+
+      if (name === "units") {
+        // Staff cannot edit units or change monthly rent (Admin only)
+        if (currentUser.role === "admin") {
+          actionButtons += '<button type="button" class="btn-sm btn-edit" data-act="edit" data-name="' + name + '" data-id="' + row.id + '">' + editIcon + ' Edit</button>';
+        }
+      } else if (name === "payments") {
+        // Staff can fix payment entered wrong on the SAME DAY only. Older payments cannot be edited by staff.
+        var isSameDay = (row.date === todayStr);
+        if (currentUser.role === "admin" || isSameDay) {
+          actionButtons += '<button type="button" class="btn-sm btn-edit" data-act="edit" data-name="' + name + '" data-id="' + row.id + '">' + editIcon + ' Edit</button>';
+        } else {
+          actionButtons += '<span class="b-locked" title="Staff can only edit payments recorded today">Locked (past date)</span>';
+        }
+      } else {
+        // Tenants and Bills: Staff can edit
+        actionButtons += '<button type="button" class="btn-sm btn-edit" data-act="edit" data-name="' + name + '" data-id="' + row.id + '">' + editIcon + ' Edit</button>';
+      }
+
+      actionButtons += '<button type="button" class="btn-sm btn-hide hide" data-act="hide" data-name="' + name + '" data-id="' + row.id + '">' + hideIcon + ' Hide</button>';
+
+      // Delete action (Admin only for full control)
+      if (currentUser.role === "admin") {
+        actionButtons += '<button type="button" class="btn-sm btn-delete del" data-act="delete" data-name="' + name + '" data-id="' + row.id + '">' + deleteIcon + ' Delete</button>';
+      }
+
+      html += "<tr>" + tds + '<td class="actions">' + actionButtons + "</td></tr>";
+    }
+
+    if (count == 0) {
+      html += '<tr><td colspan="' + (s.cols.length + 1) + '" class="empty">No records found. Try a different search or filter option.</td></tr>';
+    }
+    document.getElementById("table-" + name).innerHTML = html + "</tbody>";
+
+    // Update unhide all and unhide specific button visibility
+    var unhideBtn = document.getElementById("unhide-" + name);
+    var manageHiddenBtn = document.getElementById("manage-hidden-" + name);
+    var hiddenCount = hiddenRows[name] ? Object.keys(hiddenRows[name]).length : 0;
+
+    if (unhideBtn) {
+      if (hiddenCount > 0) {
+        unhideBtn.style.display = "inline-flex";
+        unhideBtn.innerHTML = '<svg class="btn-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> <span>Unhide all (' + hiddenCount + ')</span>';
+      } else {
+        unhideBtn.style.display = "none";
+      }
+    }
+
+    if (manageHiddenBtn) {
+      if (hiddenCount > 0) {
+        manageHiddenBtn.style.display = "inline-flex";
+        manageHiddenBtn.innerHTML = '<svg class="btn-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg> <span>Unhide specific (' + hiddenCount + ')</span>';
+      } else {
+        manageHiddenBtn.style.display = "none";
+      }
+    }
+  }
+
+  // Manage individual hidden records modal
+  function openHiddenModal(tableName) {
+    currentManagingHiddenTable = tableName;
+    var s = schema[tableName];
+    var listEl = document.getElementById("hidden-items-list");
+    document.getElementById("hidden-modal-title").textContent = "Hidden " + s.title.toLowerCase() + " records";
+
+    var hiddenMap = hiddenRows[tableName] || {};
+    var hiddenIds = Object.keys(hiddenMap);
+
+    if (hiddenIds.length === 0) {
+      listEl.innerHTML = '<div style="text-align:center; padding:16px; color:#64748B;">No hidden records in this table.</div>';
+      document.getElementById("hidden-unhide-all").style.display = "none";
+    } else {
+      document.getElementById("hidden-unhide-all").style.display = "inline-flex";
+      var html = "";
+      for (var i = 0; i < hiddenIds.length; i++) {
+        var id = hiddenIds[i];
+        var item = find(db[tableName], id);
+        var label = "";
+        if (item) {
+          if (tableName === "tenants") label = esc(item.name) + " (" + (item.unit_number || "No unit") + ")";
+          else if (tableName === "units") label = "Unit " + esc(item.number) + " (" + esc(item.type) + ")";
+          else if (tableName === "payments") label = esc(item.tenant_name) + " - " + esc(item.month) + " (" + peso(item.amount) + ")";
+          else if (tableName === "bills") label = esc(item.tenant_name) + " - " + esc(item.type) + " (" + peso(item.amount) + ")";
+        } else {
+          label = "Record #" + id;
+        }
+
+        html += '<div class="hidden-item-row">' +
+          '<span>' + label + '</span>' +
+          '<button type="button" class="btn-sm btn-restore" data-unhide-id="' + id + '" data-unhide-table="' + tableName + '"><svg class="btn-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> Restore</button>' +
+        '</div>';
+      }
+      listEl.innerHTML = html;
+    }
+    document.getElementById("hidden-overlay").classList.remove("hidden");
+  }
+
+  function closeHiddenModal() {
+    document.getElementById("hidden-overlay").classList.add("hidden");
+  }
+
+  document.getElementById("hidden-close").onclick = closeHiddenModal;
+
+  document.getElementById("hidden-unhide-all").onclick = function() {
+    if (currentManagingHiddenTable) {
+      hiddenRows[currentManagingHiddenTable] = {};
+      renderTable(currentManagingHiddenTable);
+      closeHiddenModal();
+      note("All hidden records restored.");
+    }
+  };
+
+  document.getElementById("hidden-items-list").onclick = function(e) {
+    var btn = e.target.closest("[data-unhide-id]");
+    if (!btn) return;
+    var id = btn.getAttribute("data-unhide-id");
+    var tableName = btn.getAttribute("data-unhide-table");
+    if (hiddenRows[tableName] && hiddenRows[tableName][id]) {
+      delete hiddenRows[tableName][id];
+      renderTable(tableName);
+      note("Record restored to table.");
+      openHiddenModal(tableName);
+      if (Object.keys(hiddenRows[tableName]).length === 0) {
+        closeHiddenModal();
+      }
+    }
+  };
+
+  async function renderDashboard() {
+    try {
+      var res = await fetch("api/dashboard.php");
+      var json = await res.json();
+      if (json.success) {
+        var d = json.data;
+        document.getElementById("stat-tenants").textContent = d.active_tenants;
+        document.getElementById("stat-units").textContent = d.occupied_units + " of " + d.total_units;
+        document.getElementById("stat-collected").textContent = peso(d.rent_collected);
+        document.getElementById("stat-unpaid").textContent = peso(d.unpaid_bills_total);
+
+        var recentRows = [];
+        for (var r = 0; r < d.recent_payments.length; r++) {
+          recentRows.push([esc(d.recent_payments[r].tenant_name), d.recent_payments[r].date, peso(d.recent_payments[r].amount)]);
+        }
+        simpleTable("table-recent", ["Tenant", "Date paid", "Amount"], recentRows, true);
+
+        var unpaidRows = [];
+        for (var u = 0; u < d.unpaid_bills.length; u++) {
+          unpaidRows.push([esc(d.unpaid_bills[u].tenant_name), esc(d.unpaid_bills[u].type), d.unpaid_bills[u].due, peso(d.unpaid_bills[u].amount)]);
+        }
+        simpleTable("table-unpaid", ["Tenant", "Utility", "Due date", "Amount"], unpaidRows, true);
+      }
+    } catch (e) {
+      console.error("Dashboard render error:", e);
+    }
+  }
+
+  async function renderReports() {
+    try {
+      var res = await fetch("api/reports.php");
+      var json = await res.json();
+      if (json.success) {
+        var summaryRows = [];
+        for (var i = 0; i < json.data.summary.length; i++) {
+          var item = json.data.summary[i];
+          var val = typeof item[1] === "number" ? peso(item[1]) : item[1];
+          summaryRows.push([esc(item[0]), val]);
+        }
+        simpleTable("table-summary", ["Item", "Total"], summaryRows, false);
+
+        var balanceRows = [];
+        for (var b = 0; b < json.data.balances.length; b++) {
+          var bal = json.data.balances[b];
+          balanceRows.push([
+            esc(bal.name),
+            esc(bal.unit),
+            peso(bal.rent),
+            peso(bal.paid),
+            '<span style="color:' + (bal.owed > 0 ? '#ef4444' : '#10b981') + '; font-weight:bold;">' + peso(bal.owed) + '</span>'
+          ]);
+        }
+        simpleTable("table-balances", ["Tenant", "Unit", "Monthly rent", "Rent paid", "Unpaid utilities"], balanceRows, true);
+      }
+    } catch (e) {
+      console.error("Reports render error:", e);
+    }
+  }
+
+  function refreshAll() {
+    renderTable("tenants");
+    renderTable("units");
+    renderTable("payments");
+    renderTable("bills");
+    renderDashboard();
+    renderReports();
+    var viewDeleted = document.getElementById("view-deleted");
+    if (viewDeleted && !viewDeleted.classList.contains("hidden")) {
+      renderDeletedRecords();
+    }
+  }
+
+  async function fetchAll() {
+    try {
+      var [resUnits, resTenants, resPayments, resBills] = await Promise.all([
+        fetch("api/units.php", { credentials: "include" }).then(r => r.json()),
+        fetch("api/tenants.php", { credentials: "include" }).then(r => r.json()),
+        fetch("api/payments.php", { credentials: "include" }).then(r => r.json()),
+        fetch("api/bills.php", { credentials: "include" }).then(r => r.json())
+      ]);
+
+      if (resUnits.success) db.units = resUnits.data;
+      if (resTenants.success) db.tenants = resTenants.data;
+      if (resPayments.success) db.payments = resPayments.data;
+      if (resBills.success) db.bills = resBills.data;
+
+      refreshAll();
+    } catch (err) {
+      note("Failed to load records from backend server.", "fail");
+    }
+  }
+
+  function showView(name) {
+    var views = document.querySelectorAll(".view");
+    for (var i = 0; i < views.length; i++) { views[i].classList.add("hidden"); }
+    var targetView = document.getElementById("view-" + name);
+    if (targetView) { targetView.classList.remove("hidden"); }
+
+    var buttons = document.querySelectorAll("#nav button");
+    for (var j = 0; j < buttons.length; j++) {
+      buttons[j].classList.toggle("active", buttons[j].getAttribute("data-view") == name);
+    }
+    if (titles[name]) {
+      document.getElementById("page-title").textContent = titles[name][0];
+      document.getElementById("page-sub").textContent = titles[name][1];
+    }
+    if (name === "deleted") {
+      renderDeletedRecords();
+    }
+  }
+
+  document.getElementById("nav").onclick = function (e) {
+    var btn = e.target.closest("button[data-view]");
+    if (btn) {
+      var view = btn.getAttribute("data-view");
+      if (view) { showView(view); }
+    }
+  };
+
+  function openForm(name, id) {
+    var s = schema[name];
+    var rec = id ? find(db[name], id) : {};
+    var html = "";
+    editing = { name: name, id: id };
+    document.getElementById("modal-title").textContent = (id ? "Edit " : "Add ") + s.title.toLowerCase();
+
+    // Check if adding tenant and no units are available
+    if (name === "tenants") {
+      var uInfo = unitOptions(rec ? rec.unit : null);
+      if (!id && uInfo.availableCount === 0) {
+        html += '<div class="info-banner">' +
+          '⚠️ All units are currently occupied. Please create an available unit in the Units page first, or leave unit as "None".' +
+          '</div>';
+      }
+    }
+
+    for (var i = 0; i < s.fields.length; i++) {
+      var f = s.fields[i];
+      var v = rec[f.k] === undefined ? "" : rec[f.k];
+      var input = "";
+
+      if (f.t == "select") {
+        var opts = (f.k === "unit") ? f.o(rec ? rec.unit : null) : f.o();
+        input = '<select id="f-' + f.k + '">';
+        for (var o = 0; o < opts.length; o++) {
+          input += '<option value="' + esc(opts[o][0]) + '"' + (opts[o][0] == v ? " selected" : "") + ">" + esc(opts[o][1]) + "</option>";
+        }
+        input += "</select>";
+      } else {
+        input = '<input type="' + f.t + '" id="f-' + f.k + '" value="' + esc(v) + '"' + (f.t == "number" ? ' min="1" step="0.01"' : "") + ">";
+      }
+      html += '<div class="field"><label for="f-' + f.k + '">' + f.l + "</label>" + input +
+        '<div class="error" id="e-' + f.k + '"></div></div>';
+    }
+    document.getElementById("fields").innerHTML = html;
+
+    // Requirement 3: Auto-populate Price based on Unit Type in Units modal
+    if (name === "units") {
+      var typeSelect = document.getElementById("f-type");
+      var rentInput = document.getElementById("f-rent");
+      if (typeSelect && rentInput) {
+        typeSelect.onchange = function() {
+          var selType = typeSelect.value;
+          if (defaultUnitRates[selType]) {
+            rentInput.value = defaultUnitRates[selType];
+          }
+        };
+        // Auto-fill price immediately if empty or new unit
+        if (!id && (!rentInput.value || rentInput.value == "0")) {
+          rentInput.value = defaultUnitRates[typeSelect.value] || 5000;
+        }
+      }
+    }
+
+    // Requirement 2: Staff cannot change billing rates on Utility bills
+    if (name === "bills" && currentUser.role === "staff") {
+      var billAmountInput = document.getElementById("f-amount");
+      if (billAmountInput) {
+        billAmountInput.readOnly = true;
+        var hint = document.createElement("div");
+        hint.className = "field-hint";
+        hint.textContent = "Billing rates are locked for staff (Admin only). Staff can update status & due date.";
+        billAmountInput.parentNode.appendChild(hint);
+      }
+    }
+
+    document.getElementById("overlay").classList.remove("hidden");
+  }
+
+  function closeForm() {
+    document.getElementById("overlay").classList.add("hidden");
+  }
+
+  document.getElementById("cancel").onclick = closeForm;
+
+  // Form submission with backend API communication
+  document.getElementById("form").onsubmit = async function (e) {
+    e.preventDefault();
+    var s = schema[editing.name];
+    var data = {};
+    var valid = true;
+
+    for (var i = 0; i < s.fields.length; i++) {
+      var f = s.fields[i];
+      var el = document.getElementById("f-" + f.k);
+      var err = document.getElementById("e-" + f.k);
+      var val = el.value.trim();
+      var msg = "";
+
+      if (f.req && val == "") {
+        msg = "This field is required.";
+      } else if (f.t == "number" && !(Number(val) > 0)) {
+        msg = "Enter an amount greater than 0.";
+      } else if (f.pat && !f.pat.test(val)) {
+        msg = f.msg;
+      }
+
+      el.classList.remove("is-invalid");
+      err.classList.remove("show");
+      if (msg != "") {
+        el.classList.add("is-invalid");
+        err.textContent = msg;
+        err.classList.add("show");
+        valid = false;
+      }
+      data[f.k] = (f.t == "number" || f.ref) ? Number(val) : val;
+    }
+
+    // Additional validation: Ensure selected unit for tenant is not occupied
+    if (editing.name === "tenants" && data.unit > 0) {
+      var targetUnit = find(db.units, data.unit);
+      var isSameTenantUnit = editing.id && find(db.tenants, editing.id) && find(db.tenants, editing.id).unit == data.unit;
+      if (targetUnit && (targetUnit.status === "Occupied") && !isSameTenantUnit) {
+        var unitEl = document.getElementById("f-unit");
+        var unitErr = document.getElementById("e-unit");
+        if (unitEl && unitErr) {
+          unitEl.classList.add("is-invalid");
+          unitErr.textContent = "Unit " + targetUnit.number + " is currently occupied. Please choose an available unit or add a new unit.";
+          unitErr.classList.add("show");
+          valid = false;
+        }
+      }
+    }
+
+    if (!valid) { return; }
+
+    var isUpdate = Boolean(editing.id);
+    data.action = isUpdate ? "update" : "create";
+    if (isUpdate) { data.id = editing.id; }
+
+    var saveBtn = document.getElementById("save-btn");
+    saveBtn.disabled = true;
+    saveBtn.textContent = "Saving...";
+
+    try {
+      var res = await fetch("api/" + editing.name + ".php", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+      var result = await res.json();
+
+      if (res.ok && result.success) {
+        closeForm();
+        await fetchAll();
+        note(result.message || (s.title + " saved successfully."));
+      } else {
+        if (result.data && result.data.errors) {
+          for (var fieldKey in result.data.errors) {
+            var fieldEl = document.getElementById("f-" + fieldKey);
+            var fieldErr = document.getElementById("e-" + fieldKey);
+            if (fieldEl && fieldErr) {
+              fieldEl.classList.add("is-invalid");
+              fieldErr.textContent = result.data.errors[fieldKey];
+              fieldErr.classList.add("show");
+            }
+          }
+        }
+        note(result.message || "Failed to save record.", "fail");
+      }
+    } catch (err) {
+      note("Network error: " + err.message, "fail");
+    } finally {
+      saveBtn.disabled = false;
+      saveBtn.textContent = "Save";
+    }
+  };
+
+  // Actions delegate (Add, Edit, Hide, Unhide-all, Manage-hidden)
+  document.querySelector(".content").onclick = async function (e) {
+    var btn = e.target.closest("[data-act]");
+    if (!btn) { return; }
+    var act = btn.getAttribute("data-act");
+    var name = btn.getAttribute("data-name");
+    var id = btn.getAttribute("data-id");
+    if (!act) { return; }
+
+    if (act == "add") { openForm(name, null); }
+    if (act == "edit") { openForm(name, id); }
+    if (act == "hide") {
+      if (!hiddenRows[name]) { hiddenRows[name] = {}; }
+      hiddenRows[name][id] = true;
+      renderTable(name);
+      note("Record hidden from view.");
+    }
+    if (act == "unhide-all") {
+      hiddenRows[name] = {};
+      renderTable(name);
+      note("All hidden records restored.");
+    }
+    if (act == "manage-hidden") {
+      openHiddenModal(name);
+    }
+    if (act == "delete") {
+      var row = find(db[name], id);
+      var label = "Record #" + id;
+      if (row) {
+        if (name === "tenants") label = (row.name || "Tenant") + " (" + (row.unit_number || "No unit") + ")";
+        else if (name === "units") label = "Unit " + row.number + " (" + row.type + ")";
+        else if (name === "payments") label = row.tenant_name + " - " + row.month + " (" + peso(row.amount) + ")";
+        else if (name === "bills") label = row.tenant_name + " - " + row.type + " (" + peso(row.amount) + ")";
+      }
+
+      var typeTitle = schema[name] ? schema[name].title.toLowerCase() : "record";
+      var confirmed = await showConfirmModal({
+        title: "Delete " + typeTitle.charAt(0).toUpperCase() + typeTitle.slice(1) + "?",
+        message: "This record will be moved to the Deleted Records archive where an administrator can view or restore it at any time.",
+        details: label,
+        okText: "Delete Record",
+        cancelText: "Cancel",
+        variant: "danger"
+      });
+      if (!confirmed) return;
+
+      try {
+        btn.disabled = true;
+        var res = await fetch("api/deleted_records.php?action=delete", {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ table: name, id: id })
+        });
+        var result = await res.json();
+        if (res.ok && result.success) {
+          note(result.message || "Record moved to Deleted Records.", "success");
+          await fetchAll();
+        } else {
+          note(result.message || "Failed to delete record.", "fail");
+        }
+      } catch (err) {
+        note("Network error: " + err.message, "fail");
+      } finally {
+        btn.disabled = false;
+      }
+    }
+  };
+
+  // Primary Key Click to Sort Handler ONLY
+  document.addEventListener('click', function(e) {
+    var th = e.target.closest('.sortable-th');
+    if (!th) return;
+    var tableId = th.getAttribute('data-table');
+    var col = th.getAttribute('data-col');
+    var current = sortState[tableId];
+    if (current && current.col === col) {
+      sortState[tableId] = { col: col, dir: current.dir === 'asc' ? 'desc' : 'asc' };
+    } else {
+      sortState[tableId] = { col: col, dir: 'asc' };
+    }
+    if (schema[tableId]) {
+      renderTable(tableId);
+    } else if (simpleTableCache[tableId]) {
+      var cached = simpleTableCache[tableId];
+      simpleTable(tableId, cached.heads, cached.rows, true);
+    }
+  });
+
+  // Setup search & filter handlers
+  function setupTable(name) {
+    var select = document.getElementById("filter-" + name);
+    var choices = schema[name].filter[1];
+    select.innerHTML = '<option value="">All</option>';
+    for (var i = 0; i < choices.length; i++) {
+      select.innerHTML += '<option value="' + choices[i] + '">' + choices[i] + "</option>";
+    }
+    document.getElementById("search-" + name).oninput = function () { renderTable(name); };
+    select.onchange = function () { renderTable(name); };
+  }
+
+  // Dark Mode / Light Mode Management
+  function initTheme() {
+    var savedTheme = localStorage.getItem("hallway_theme");
+    var prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+    var theme = savedTheme ? savedTheme : (prefersDark ? "dark" : "light");
+    applyTheme(theme);
+  }
+
+  function applyTheme(theme) {
+    var isDark = (theme === "dark");
+    if (isDark) {
+      document.body.classList.add("dark-mode");
+    } else {
+      document.body.classList.remove("dark-mode");
+    }
+    localStorage.setItem("hallway_theme", theme);
+    updateThemeToggleUI(isDark);
+  }
+
+  function updateThemeToggleUI(isDark) {
+    var iconEl = document.getElementById("theme-toggle-icon");
+    var textEl = document.getElementById("theme-toggle-text");
+    var btn = document.getElementById("theme-toggle");
+    if (!btn) return;
+
+    if (isDark) {
+      if (iconEl) {
+        iconEl.innerHTML = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>';
+      }
+      if (textEl) textEl.textContent = "Light Mode";
+      btn.title = "Switch to Light Mode";
+    } else {
+      if (iconEl) {
+        iconEl.innerHTML = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>';
+      }
+      if (textEl) textEl.textContent = "Dark Mode";
+      btn.title = "Switch to Dark Mode";
+    }
+  }
+
+  var themeToggleBtn = document.getElementById("theme-toggle");
+  if (themeToggleBtn) {
+    themeToggleBtn.onclick = function() {
+      var isDark = document.body.classList.contains("dark-mode");
+      applyTheme(isDark ? "light" : "dark");
+    };
+  }
+
+  var deletedRecordsCache = [];
+
+  async function renderDeletedRecords() {
+    var searchEl = document.getElementById("search-deleted");
+    var filterEl = document.getElementById("filter-deleted");
+    var search = searchEl ? searchEl.value.trim().toLowerCase() : "";
+    var filterType = filterEl ? filterEl.value : "";
+
+    try {
+      var url = "api/deleted_records.php";
+      var params = [];
+      if (filterType) params.push("type=" + encodeURIComponent(filterType));
+      if (search) params.push("search=" + encodeURIComponent(search));
+      if (params.length > 0) url += "?" + params.join("&");
+
+      var res = await fetch(url, { credentials: "include" });
+      var json = await res.json();
+      var table = document.getElementById("table-deleted");
+      if (!table) return;
+
+      if (!json.success) {
+        // Disable bulk-action buttons when no records can be confirmed
+        var btnRA = document.getElementById("btn-restore-all");
+        var btnPA = document.getElementById("btn-purge-all");
+        if (btnRA) btnRA.disabled = true;
+        if (btnPA) btnPA.disabled = true;
+        table.innerHTML = '<thead><tr><th>Type</th><th>Record description</th><th>Deleted by</th><th>Deleted on</th><th>Actions</th></tr></thead>' +
+          '<tbody><tr><td colspan="5" class="empty">' + esc(json.message || "Failed to load deleted records.") + '</td></tr></tbody>';
+        return;
+      }
+
+      var records = json.data || [];
+      deletedRecordsCache = records;
+
+      // Toggle Restore All / Purge All buttons based on record count
+      var btnRA = document.getElementById("btn-restore-all");
+      var btnPA = document.getElementById("btn-purge-all");
+      var hasRecords = records.length > 0;
+      if (btnRA) btnRA.disabled = !hasRecords;
+      if (btnPA) btnPA.disabled = !hasRecords;
+
+      var html = '<thead><tr>' +
+        '<th>Type</th>' +
+        '<th>Record description</th>' +
+        '<th>Deleted by</th>' +
+        '<th>Deleted on</th>' +
+        '<th>Actions</th>' +
+        '</tr></thead><tbody>';
+
+      if (records.length === 0) {
+        html += '<tr><td colspan="5" class="empty">No deleted records in archive.</td></tr>';
+      } else {
+        var restoreIcon = '<svg class="btn-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>';
+        var purgeIcon = '<svg class="btn-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>';
+
+        for (var i = 0; i < records.length; i++) {
+          var r = records[i];
+          var badgeClass = "b-" + r.table_name;
+          var typeLabel = r.table_name.charAt(0).toUpperCase() + r.table_name.slice(1);
+          if (r.table_name === "payments") typeLabel = "Payment";
+          if (r.table_name === "bills") typeLabel = "Utility bill";
+          if (r.table_name === "tenants") typeLabel = "Tenant";
+          if (r.table_name === "units") typeLabel = "Unit";
+
+          var dateStr = r.deleted_at ? new Date(r.deleted_at.replace(/-/g, "/")).toLocaleString() : "-";
+
+          html += '<tr>' +
+            '<td><span class="badge ' + badgeClass + '">' + esc(typeLabel) + '</span></td>' +
+            '<td><strong>' + esc(r.record_label) + '</strong></td>' +
+            '<td>' + esc(r.deleted_by || "Administrator") + '</td>' +
+            '<td>' + esc(dateStr) + '</td>' +
+            '<td class="actions">' +
+              '<button type="button" class="btn-sm btn-restore" data-del-act="restore" data-deleted-id="' + r.deleted_id + '">' + restoreIcon + ' Restore</button>' +
+              '<button type="button" class="btn-sm btn-delete del" data-del-act="purge" data-deleted-id="' + r.deleted_id + '">' + purgeIcon + ' Purge</button>' +
+            '</td>' +
+          '</tr>';
+        }
+      }
+
+      html += '</tbody>';
+      table.innerHTML = html;
+    } catch (e) {
+      console.error("Error loading deleted records:", e);
+    }
+  }
+
+  // Handle Restore and Purge inside Deleted Records table
+  var tableDeleted = document.getElementById("table-deleted");
+  if (tableDeleted) {
+    tableDeleted.onclick = async function (e) {
+      var btn = e.target.closest("[data-del-act]");
+      if (!btn) return;
+      var act = btn.getAttribute("data-del-act");
+      var deletedId = parseInt(btn.getAttribute("data-deleted-id"), 10);
+      var rec = null;
+      for (var i = 0; i < deletedRecordsCache.length; i++) {
+        if (deletedRecordsCache[i].deleted_id == deletedId) {
+          rec = deletedRecordsCache[i];
+          break;
+        }
+      }
+      var label = rec ? rec.record_label : ("Record #" + deletedId);
+
+      if (act === "restore") {
+        var confirmed = await showConfirmModal({
+          title: "Restore Record?",
+          message: "This will restore the record back to active records and re-establish its relationships.",
+          details: label,
+          okText: "Restore Record",
+          cancelText: "Cancel",
+          variant: "success"
+        });
+        if (!confirmed) return;
+        try {
+          btn.disabled = true;
+          var res = await fetch("api/deleted_records.php?action=restore", {
+            method: "POST",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ deleted_id: deletedId })
+          });
+          var result = await res.json();
+          if (res.ok && result.success) {
+            note(result.message || "Record restored successfully.", "success");
+            await fetchAll();
+            renderDeletedRecords();
+          } else {
+            note(result.message || "Failed to restore record.", "fail");
+          }
+        } catch (err) {
+          note("Restore error: " + err.message, "fail");
+        } finally {
+          btn.disabled = false;
+        }
+      }
+
+      if (act === "purge") {
+        var confirmed = await showConfirmModal({
+          title: "Permanently Delete?",
+          message: "Are you sure you want to permanently delete this record from the archive? This cannot be undone.",
+          details: label,
+          okText: "Permanently Purge",
+          cancelText: "Cancel",
+          variant: "danger"
+        });
+        if (!confirmed) return;
+        try {
+          btn.disabled = true;
+          var res = await fetch("api/deleted_records.php?action=purge", {
+            method: "POST",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ deleted_id: deletedId })
+          });
+          var result = await res.json();
+          if (res.ok && result.success) {
+            note(result.message || "Record permanently purged.", "success");
+            renderDeletedRecords();
+          } else {
+            note(result.message || "Failed to purge record.", "fail");
+          }
+        } catch (err) {
+          note("Purge error: " + err.message, "fail");
+        } finally {
+          btn.disabled = false;
+        }
+      }
+    };
+  }
+
+  // Restore all button handler
+  var btnRestoreAll = document.getElementById("btn-restore-all");
+  if (btnRestoreAll) {
+    btnRestoreAll.onclick = async function () {
+      if (this.disabled || deletedRecordsCache.length === 0) return;
+      var filterType = document.getElementById("filter-deleted") ? document.getElementById("filter-deleted").value : "";
+      var confirmed = await showConfirmModal({
+        title: "Restore All Records?",
+        message: "This will restore " + (filterType ? filterType : "all archived") + " records back into active tables and re-establish their relationships.",
+        details: "Total records to restore: " + deletedRecordsCache.length,
+        okText: "Restore All",
+        cancelText: "Cancel",
+        variant: "success"
+      });
+      if (!confirmed) return;
+      try {
+        btnRestoreAll.disabled = true;
+        var res = await fetch("api/deleted_records.php?action=restore_all", {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ type: filterType })
+        });
+        var result = await res.json();
+        if (res.ok && result.success) {
+          note(result.message || "All records restored successfully.", "success");
+          await fetchAll();
+          renderDeletedRecords();
+        } else {
+          note(result.message || "Failed to restore all records.", "fail");
+          renderDeletedRecords();
+        }
+      } catch (err) {
+        note("Restore all error: " + err.message, "fail");
+      } finally {
+        btnRestoreAll.disabled = deletedRecordsCache.length === 0;
+      }
+    };
+  }
+
+  // Purge all button handler
+  var btnPurgeAll = document.getElementById("btn-purge-all");
+  if (btnPurgeAll) {
+    btnPurgeAll.onclick = async function () {
+      if (this.disabled || deletedRecordsCache.length === 0) return;
+      var filterType = document.getElementById("filter-deleted") ? document.getElementById("filter-deleted").value : "";
+      var confirmed = await showConfirmModal({
+        title: "Clear Deleted Archive?",
+        message: "Warning: All " + (filterType ? filterType : "archived") + " records will be permanently erased. This cannot be undone.",
+        details: "Total records to purge: " + deletedRecordsCache.length,
+        okText: "Purge All",
+        cancelText: "Cancel",
+        variant: "danger"
+      });
+      if (!confirmed) return;
+      try {
+        btnPurgeAll.disabled = true;
+        var res = await fetch("api/deleted_records.php?action=purge_all", {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ type: filterType })
+        });
+        var result = await res.json();
+        if (res.ok && result.success) {
+          note(result.message || "Archive cleared.", "success");
+          renderDeletedRecords();
+        } else {
+          note(result.message || "Failed to clear archive.", "fail");
+        }
+      } catch (err) {
+        note("Purge all error: " + err.message, "fail");
+      } finally {
+        // Re-enable only if records remain (renderDeletedRecords updates this too)
+        btnPurgeAll.disabled = deletedRecordsCache.length === 0;
+      }
+    };
+  }
+
+  // Search & filter event bindings for deleted records
+  var searchDeleted = document.getElementById("search-deleted");
+  if (searchDeleted) {
+    searchDeleted.oninput = function() { renderDeletedRecords(); };
+  }
+  var filterDeleted = document.getElementById("filter-deleted");
+  if (filterDeleted) {
+    filterDeleted.onchange = function() { renderDeletedRecords(); };
+  }
+
+  // Initialize
+  initTheme();
+  checkAuth();
+  setupTable("tenants");
+  setupTable("units");
+  setupTable("payments");
+  setupTable("bills");
+  fetchAll();
+</script>
+</body>
+</html>

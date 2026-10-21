@@ -1,0 +1,482 @@
+/* style.css - plain CSS, no Bootstrap */
+
+/* ---------- Basics ---------- */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background: #F3F6F5;
+  color: #12232B;
+}
+
+a {
+  color: #9A6F22;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* ---------- Page layout (two columns) ---------- */
+.page {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ---------- Left side: brand panel ---------- */
+.brand {
+  flex: 1;
+  background-color: #0F3D3E;
+  /* green overlay on top of the photo so the text is easy to read */
+  background-image: linear-gradient(rgba(15, 61, 62, 0.8), rgba(15, 61, 62, 0.55)), url("building.png");
+  background-size: cover;
+  background-position: center;
+  color: white;
+  padding: 48px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.logo-bg { fill: #C8963E; }
+.logo-fg { fill: #0F3D3E; }
+
+.pitch {
+  max-width: 440px;
+  position: relative;
+}
+
+.pitch h2 {
+  font-size: 36px;
+  margin: 0 0 12px 0;
+}
+
+.pitch p {
+  color: #B9CFCB;
+  margin: 0;
+}
+
+.chip {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  align-self: flex-start;
+  font-size: 14px;
+  position: relative;
+}
+
+.chip strong {
+  display: block;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #C8963E;
+}
+
+/* ---------- Right side: form ---------- */
+.form-side {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.box {
+  width: 100%;
+  max-width: 420px;
+}
+
+.mobile-logo {
+  display: none; /* only shown on small screens */
+  align-items: center;
+  gap: 10px;
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 24px;
+}
+
+.box h1 {
+  font-size: 28px;
+  margin: 0 0 4px 0;
+}
+
+.subtitle {
+  color: #5B6B72;
+  margin: 0 0 24px 0;
+}
+
+/* Staff / Admin tabs */
+.tabs {
+  display: flex;
+  background: #D9E2E0;
+  border-radius: 10px;
+  padding: 4px;
+  margin-bottom: 24px;
+}
+
+.tabs button {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #5B6B72;
+  border-radius: 7px;
+  cursor: pointer;
+}
+
+.tabs button.active {
+  background: #16524F;
+  color: white;
+}
+
+/* Form fields */
+.field {
+  margin-bottom: 16px;
+}
+
+label {
+  display: block;
+  font-weight: bold;
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+
+input[type="email"],
+input[type="password"],
+input[type="text"] {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 16px;
+  border: 1.5px solid #D9E2E0;
+  border-radius: 8px;
+  background: white;
+}
+
+input:focus {
+  outline: none;
+  border-color: #16524F;
+  box-shadow: 0 0 0 3px rgba(22, 82, 79, 0.25);
+}
+
+input.is-invalid {
+  border-color: #B3342B;
+}
+
+.password-row {
+  display: flex;
+  gap: 8px;
+}
+
+.show-btn {
+  border: 1.5px solid #D9E2E0;
+  background: white;
+  color: #5B6B72;
+  border-radius: 8px;
+  padding: 0 16px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.error {
+  display: none;
+  color: #B3342B;
+  font-size: 13px;
+  margin-top: 5px;
+}
+
+.error.show {
+  display: block;
+}
+
+.options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  margin-bottom: 22px;
+}
+
+.options label {
+  font-weight: normal;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.login-btn {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  background: #16524F;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.login-btn:hover {
+  background: #0F3D3E;
+}
+
+/* Message under the button */
+.message {
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.message.hidden {
+  display: none;
+}
+
+.message.success {
+  background: #E3EFEC;
+  color: #0F3D3E;
+  border: 1px solid #16524F;
+}
+
+.message.error, .message.fail {
+  background: #FEE2E2;
+  color: #991B1B;
+  border: 1px solid #F87171;
+}
+
+.footer-text {
+  margin-top: 24px;
+  text-align: center;
+  font-size: 13px;
+  color: #5B6B72;
+}
+
+/* ---------- Small screens (768px and below) ---------- */
+/* The green panel with the building becomes the page background,
+   and the form sits on top of it like a card. */
+@media (max-width: 768px) {
+  .page {
+    position: relative;
+  }
+
+  .brand {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+  }
+
+  /* hide the text, keep only the background and building */
+  .brand .logo,
+  .pitch,
+  .chip {
+    display: none;
+  }
+
+  .form-side {
+    position: relative; /* puts the form above the background */
+    padding: 24px 16px;
+  }
+
+  .box {
+    background: white;
+    border-radius: 16px;
+    padding: 28px 24px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  }
+
+  .mobile-logo {
+    display: flex;
+  }
+}
+
+
+/* ========================================================
+   Tabs Icon & Theme Toggle for Login
+   ======================================================== */
+.tabs button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+}
+
+.tabs button svg {
+  pointer-events: none;
+  stroke: currentColor;
+}
+
+.show-btn {
+  transition: all 0.2s ease;
+}
+
+.show-btn:hover {
+  background: #EBF1EF;
+  border-color: #B9CFCB;
+}
+
+.form-side {
+  position: relative;
+  padding: 64px 32px 40px;
+  min-height: 100vh;
+}
+
+.theme-toggle-login {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  background: white;
+  border: 1px solid #D9E2E0;
+  border-radius: 9px;
+  padding: 8px 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: bold;
+  color: #12232B;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.theme-toggle-login:hover {
+  background: #EBF1EF;
+  border-color: #B9CFCB;
+}
+
+.theme-toggle-login svg {
+  pointer-events: none;
+  stroke: #C8963E;
+}
+
+@media (max-width: 768px) {
+  .form-side {
+    padding: 68px 18px 32px 18px;
+  }
+  .theme-toggle-login {
+    top: 16px;
+    right: 16px;
+  }
+  body.dark-mode .box {
+    background: #152226;
+    border: 1px solid #26383E;
+    color: #F1F5F9;
+  }
+}
+
+/* ========================================================
+   DARK MODE FOR LOGIN PAGE
+   ======================================================== */
+body.dark-mode {
+  background: #0B1315;
+  color: #E2E8F0;
+}
+
+body.dark-mode .form-side {
+  background: #0B1315;
+}
+
+body.dark-mode .box {
+  color: #F1F5F9;
+}
+
+body.dark-mode .box h1 {
+  color: #F8FAFC;
+}
+
+body.dark-mode .subtitle {
+  color: #94A3B8;
+}
+
+body.dark-mode .tabs {
+  background: #1B2B30;
+}
+
+body.dark-mode .tabs button {
+  color: #94A3B8;
+}
+
+body.dark-mode .tabs button.active {
+  background: #16524F;
+  color: white;
+}
+
+body.dark-mode .theme-toggle-login {
+  background: #152226;
+  border-color: #26383E;
+  color: #F1F5F9;
+}
+
+body.dark-mode .theme-toggle-login:hover {
+  background: #1D2E33;
+  border-color: #385058;
+}
+
+body.dark-mode .theme-toggle-login svg {
+  stroke: #FBBF24;
+}
+
+body.dark-mode input[type="email"],
+body.dark-mode input[type="password"],
+body.dark-mode input[type="text"] {
+  background: #1B2B30;
+  border-color: #2E434A;
+  color: #F1F5F9;
+}
+
+body.dark-mode input:focus {
+  border-color: #C8963E;
+  box-shadow: 0 0 0 3px rgba(200, 150, 62, 0.25);
+}
+
+body.dark-mode .show-btn {
+  background: #1B2B30;
+  border-color: #2E434A;
+  color: #CBD5E1;
+}
+
+body.dark-mode .show-btn:hover {
+  background: #24383F;
+  border-color: #3B555E;
+  color: #FFFFFF;
+}
+
+body.dark-mode .options label {
+  color: #CBD5E1;
+}
+
+body.dark-mode .options a {
+  color: #FBBF24;
+}
+
+body.dark-mode .footer-text {
+  color: #64748B;
+}
