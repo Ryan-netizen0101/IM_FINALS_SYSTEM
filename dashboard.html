@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Dashboard · Hallway Billing</title>
+  <title>Dashboard · AptLedger</title>
   <link href="dashboard.css" rel="stylesheet">
 </head>
 <body>
@@ -15,7 +15,7 @@
         <rect class="logo-bg" width="34" height="34" rx="8"/>
         <path class="logo-fg" d="M9 25V12l8-5 8 5v13h-5v-6h-6v6z"/>
       </svg>
-      Hallway Billing
+      AptLedger
     </div>
 
     <nav class="nav" id="nav">
@@ -162,8 +162,6 @@
       <div class="toolbar">
         <input type="text" id="search-tenants" placeholder="Search tenants">
         <select id="filter-tenants"></select>
-        <button type="button" class="btn btn-light btn-unhide" id="unhide-tenants" data-act="unhide-all" data-name="tenants" style="display:none;"><svg class="btn-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> <span>Unhide all</span></button>
-        <button type="button" class="btn btn-light btn-manage-hidden" id="manage-hidden-tenants" data-act="manage-hidden" data-name="tenants" style="display:none;"><svg class="btn-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg> <span>Unhide specific...</span></button>
         <button type="button" class="btn" data-act="add" data-name="tenants">Add tenant</button>
       </div>
       <div class="card table-wrap"><table id="table-tenants"></table></div>
@@ -174,8 +172,6 @@
       <div class="toolbar">
         <input type="text" id="search-units" placeholder="Search units">
         <select id="filter-units"></select>
-        <button type="button" class="btn btn-light btn-unhide" id="unhide-units" data-act="unhide-all" data-name="units" style="display:none;"><svg class="btn-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> <span>Unhide all</span></button>
-        <button type="button" class="btn btn-light btn-manage-hidden" id="manage-hidden-units" data-act="manage-hidden" data-name="units" style="display:none;"><svg class="btn-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg> <span>Unhide specific...</span></button>
         <button type="button" class="btn" id="btn-add-unit" data-act="add" data-name="units">Add unit</button>
       </div>
       <div class="card table-wrap"><table id="table-units"></table></div>
@@ -186,8 +182,6 @@
       <div class="toolbar">
         <input type="text" id="search-payments" placeholder="Search payments">
         <select id="filter-payments"></select>
-        <button type="button" class="btn btn-light btn-unhide" id="unhide-payments" data-act="unhide-all" data-name="payments" style="display:none;"><svg class="btn-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> <span>Unhide all</span></button>
-        <button type="button" class="btn btn-light btn-manage-hidden" id="manage-hidden-payments" data-act="manage-hidden" data-name="payments" style="display:none;"><svg class="btn-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg> <span>Unhide specific...</span></button>
         <button type="button" class="btn" data-act="add" data-name="payments">Record payment</button>
       </div>
       <div class="card table-wrap"><table id="table-payments"></table></div>
@@ -198,8 +192,6 @@
       <div class="toolbar">
         <input type="text" id="search-bills" placeholder="Search bills">
         <select id="filter-bills"></select>
-        <button type="button" class="btn btn-light btn-unhide" id="unhide-bills" data-act="unhide-all" data-name="bills" style="display:none;"><svg class="btn-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> <span>Unhide all</span></button>
-        <button type="button" class="btn btn-light btn-manage-hidden" id="manage-hidden-bills" data-act="manage-hidden" data-name="bills" style="display:none;"><svg class="btn-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg> <span>Unhide specific...</span></button>
         <button type="button" class="btn" data-act="add" data-name="bills">Add bill</button>
       </div>
       <div class="card table-wrap"><table id="table-bills"></table></div>
@@ -264,19 +256,6 @@
         <button type="submit" class="btn" id="save-btn">Save</button>
       </div>
     </form>
-  </div>
-</div>
-
-<!-- Manage Hidden Records Modal -->
-<div class="overlay hidden" id="hidden-overlay">
-  <div class="modal">
-    <h2 id="hidden-modal-title">Hidden records</h2>
-    <p class="subtitle" style="margin-bottom: 16px;">Select an individual record to restore or unhide all.</p>
-    <div id="hidden-items-list" style="margin-bottom: 20px; max-height: 250px; overflow-y: auto;"></div>
-    <div class="modal-actions">
-      <button type="button" class="btn btn-light" id="hidden-close">Close</button>
-      <button type="button" class="btn" id="hidden-unhide-all">Unhide all</button>
-    </div>
   </div>
 </div>
 
@@ -387,7 +366,6 @@
   var sortState = {};
   var hiddenRows = {};
   var simpleTableCache = {};
-  var currentManagingHiddenTable = null;
 
   // Session & Auth Handling
   async function checkAuth() {
@@ -785,7 +763,7 @@
       }
 
       if (q != "" && text.toLowerCase().indexOf(q) == -1) { continue; }
-      
+
       // Case-insensitive status filtering (Fixes Moved Out filter bug)
       if (f != "") {
         var rowVal = String(row[s.filter[0]] || "").trim().toLowerCase();
@@ -819,7 +797,10 @@
         actionButtons += '<button type="button" class="btn-sm btn-edit" data-act="edit" data-name="' + name + '" data-id="' + row.id + '">' + editIcon + ' Edit</button>';
       }
 
-      actionButtons += '<button type="button" class="btn-sm btn-hide hide" data-act="hide" data-name="' + name + '" data-id="' + row.id + '">' + hideIcon + ' Hide</button>';
+      // Hide button: staff only (admins do not hide, they use Delete instead)
+      if (currentUser.role !== "admin") {
+        actionButtons += '<button type="button" class="btn-sm btn-hide hide" data-act="hide" data-name="' + name + '" data-id="' + row.id + '">' + hideIcon + ' Hide</button>';
+      }
 
       // Delete action (Admin only for full control)
       if (currentUser.role === "admin") {
@@ -833,100 +814,9 @@
       html += '<tr><td colspan="' + (s.cols.length + 1) + '" class="empty">No records found. Try a different search or filter option.</td></tr>';
     }
     document.getElementById("table-" + name).innerHTML = html + "</tbody>";
-
-    // Update unhide all and unhide specific button visibility
-    var unhideBtn = document.getElementById("unhide-" + name);
-    var manageHiddenBtn = document.getElementById("manage-hidden-" + name);
-    var hiddenCount = hiddenRows[name] ? Object.keys(hiddenRows[name]).length : 0;
-
-    if (unhideBtn) {
-      if (hiddenCount > 0) {
-        unhideBtn.style.display = "inline-flex";
-        unhideBtn.innerHTML = '<svg class="btn-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> <span>Unhide all (' + hiddenCount + ')</span>';
-      } else {
-        unhideBtn.style.display = "none";
-      }
-    }
-
-    if (manageHiddenBtn) {
-      if (hiddenCount > 0) {
-        manageHiddenBtn.style.display = "inline-flex";
-        manageHiddenBtn.innerHTML = '<svg class="btn-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg> <span>Unhide specific (' + hiddenCount + ')</span>';
-      } else {
-        manageHiddenBtn.style.display = "none";
-      }
-    }
   }
 
-  // Manage individual hidden records modal
-  function openHiddenModal(tableName) {
-    currentManagingHiddenTable = tableName;
-    var s = schema[tableName];
-    var listEl = document.getElementById("hidden-items-list");
-    document.getElementById("hidden-modal-title").textContent = "Hidden " + s.title.toLowerCase() + " records";
-
-    var hiddenMap = hiddenRows[tableName] || {};
-    var hiddenIds = Object.keys(hiddenMap);
-
-    if (hiddenIds.length === 0) {
-      listEl.innerHTML = '<div style="text-align:center; padding:16px; color:#64748B;">No hidden records in this table.</div>';
-      document.getElementById("hidden-unhide-all").style.display = "none";
-    } else {
-      document.getElementById("hidden-unhide-all").style.display = "inline-flex";
-      var html = "";
-      for (var i = 0; i < hiddenIds.length; i++) {
-        var id = hiddenIds[i];
-        var item = find(db[tableName], id);
-        var label = "";
-        if (item) {
-          if (tableName === "tenants") label = esc(item.name) + " (" + (item.unit_number || "No unit") + ")";
-          else if (tableName === "units") label = "Unit " + esc(item.number) + " (" + esc(item.type) + ")";
-          else if (tableName === "payments") label = esc(item.tenant_name) + " - " + esc(item.month) + " (" + peso(item.amount) + ")";
-          else if (tableName === "bills") label = esc(item.tenant_name) + " - " + esc(item.type) + " (" + peso(item.amount) + ")";
-        } else {
-          label = "Record #" + id;
-        }
-
-        html += '<div class="hidden-item-row">' +
-          '<span>' + label + '</span>' +
-          '<button type="button" class="btn-sm btn-restore" data-unhide-id="' + id + '" data-unhide-table="' + tableName + '"><svg class="btn-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> Restore</button>' +
-        '</div>';
-      }
-      listEl.innerHTML = html;
-    }
-    document.getElementById("hidden-overlay").classList.remove("hidden");
-  }
-
-  function closeHiddenModal() {
-    document.getElementById("hidden-overlay").classList.add("hidden");
-  }
-
-  document.getElementById("hidden-close").onclick = closeHiddenModal;
-
-  document.getElementById("hidden-unhide-all").onclick = function() {
-    if (currentManagingHiddenTable) {
-      hiddenRows[currentManagingHiddenTable] = {};
-      renderTable(currentManagingHiddenTable);
-      closeHiddenModal();
-      note("All hidden records restored.");
-    }
-  };
-
-  document.getElementById("hidden-items-list").onclick = function(e) {
-    var btn = e.target.closest("[data-unhide-id]");
-    if (!btn) return;
-    var id = btn.getAttribute("data-unhide-id");
-    var tableName = btn.getAttribute("data-unhide-table");
-    if (hiddenRows[tableName] && hiddenRows[tableName][id]) {
-      delete hiddenRows[tableName][id];
-      renderTable(tableName);
-      note("Record restored to table.");
-      openHiddenModal(tableName);
-      if (Object.keys(hiddenRows[tableName]).length === 0) {
-        closeHiddenModal();
-      }
-    }
-  };
+  // Click handler for Restore buttons inside the Deleted Records table is further below.
 
   async function renderDashboard() {
     try {
@@ -1217,7 +1107,7 @@
     }
   };
 
-  // Actions delegate (Add, Edit, Hide, Unhide-all, Manage-hidden)
+  // Actions delegate (Add, Edit, Hide, Delete)
   document.querySelector(".content").onclick = async function (e) {
     var btn = e.target.closest("[data-act]");
     if (!btn) { return; }
@@ -1229,18 +1119,12 @@
     if (act == "add") { openForm(name, null); }
     if (act == "edit") { openForm(name, id); }
     if (act == "hide") {
+      // Admins do not hide records (they use Delete instead)
+      if (currentUser.role === "admin") { return; }
       if (!hiddenRows[name]) { hiddenRows[name] = {}; }
       hiddenRows[name][id] = true;
       renderTable(name);
       note("Record hidden from view.");
-    }
-    if (act == "unhide-all") {
-      hiddenRows[name] = {};
-      renderTable(name);
-      note("All hidden records restored.");
-    }
-    if (act == "manage-hidden") {
-      openHiddenModal(name);
     }
     if (act == "delete") {
       var row = find(db[name], id);
@@ -1627,12 +1511,11 @@
 
   // Initialize
   initTheme();
-  checkAuth();
   setupTable("tenants");
   setupTable("units");
   setupTable("payments");
   setupTable("bills");
-  fetchAll();
+  checkAuth().then(function () { fetchAll(); });
 </script>
 </body>
 </html>
