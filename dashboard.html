@@ -259,6 +259,18 @@
   </div>
 </div>
 
+<!-- Hidden Rows Modal (Staff: restore specific rows) -->
+<div class="overlay hidden" id="hidden-overlay">
+  <div class="modal">
+    <h2 id="hidden-modal-title">Hidden records</h2>
+    <p class="subtitle" style="margin-bottom: 16px;">Select an individual record to restore it to the table.</p>
+    <div id="hidden-items-list" style="margin-bottom: 20px; max-height: 250px; overflow-y: auto;"></div>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-light" id="hidden-close">Close</button>
+    </div>
+  </div>
+</div>
+
 <!-- Styled Confirmation Popup Modal -->
 <div class="overlay hidden" id="confirm-overlay">
   <div class="modal confirm-modal">
@@ -366,6 +378,44 @@
   var sortState = {};
   var hiddenRows = {};
   var simpleTableCache = {};
+
+  // Staff-only Unhide buttons: created only for staff, and only when rows are hidden
+  function updateStaffUnhideButton(name) {
+    var toolbar = document.querySelector("#view-" + name + " .toolbar");
+    if (!toolbar) return;
+    var hiddenCount = hiddenRows[name] ? Object.keys(hiddenRows[name]).length : 0;
+    var showButtons = currentUser.role !== "admin" && hiddenCount > 0;
+    var addBtn = toolbar.querySelector('[data-act="add"]');
+
+    // "Unhide all" button
+    var allBtn = document.getElementById("staff-unhide-" + name);
+    if (!allBtn) {
+      allBtn = document.createElement("button");
+      allBtn.type = "button";
+      allBtn.id = "staff-unhide-" + name;
+      allBtn.className = "btn btn-light";
+      allBtn.setAttribute("data-act", "unhide-all");
+      allBtn.setAttribute("data-name", name);
+      toolbar.insertBefore(allBtn, addBtn);
+    }
+
+    // "Unhide specific" button
+    var specBtn = document.getElementById("staff-unhide-specific-" + name);
+    if (!specBtn) {
+      specBtn = document.createElement("button");
+      specBtn.type = "button";
+      specBtn.id = "staff-unhide-specific-" + name;
+      specBtn.className = "btn btn-light";
+      specBtn.setAttribute("data-act", "unhide-specific");
+      specBtn.setAttribute("data-name", name);
+      toolbar.insertBefore(specBtn, addBtn);
+    }
+
+    allBtn.textContent = "Unhide all (" + hiddenCount + ")";
+    specBtn.textContent = "Unhide specific (" + hiddenCount + ")";
+    allBtn.style.display = showButtons ? "inline-flex" : "none";
+    specBtn.style.display = showButtons ? "inline-flex" : "none";
+  }
 
   // Session & Auth Handling
   async function checkAuth() {
@@ -814,7 +864,72 @@
       html += '<tr><td colspan="' + (s.cols.length + 1) + '" class="empty">No records found. Try a different search or filter option.</td></tr>';
     }
     document.getElementById("table-" + name).innerHTML = html + "</tbody>";
+    updateStaffUnhideButton(name);
   }
+
+  // Build a readable label for a hidden row, used in the Unhide specific list
+  function hiddenRowLabel(name, id) {
+    var item = find(db[name], id);
+    if (!item) return "Record #" + esc(id);
+    if (name === "tenants") return esc(item.name) + " (" + esc(item.unit_number || "No unit") + ")";
+    if (name === "units") return "Unit " + esc(item.number) + " (" + esc(item.type) + ")";
+    if (name === "payments") return esc(item.tenant_name) + " - " + esc(item.month) + " (" + peso(item.amount) + ")";
+    if (name === "bills") return esc(item.tenant_name) + " - " + esc(item.type) + " (" + peso(item.amount) + ")";
+    return "Record #" + esc(id);
+  }
+
+  // Open the Unhide specific modal listing the hidden rows of one table
+  function openHiddenModal(name) {
+    if (currentUser.role === "admin") { return; }
+    var s = schema[name];
+    var listEl = document.getElementById("hidden-items-list");
+    document.getElementById("hidden-modal-title").textContent = "Hidden " + s.title.toLowerCase() + " records";
+
+    var ids = Object.keys(hiddenRows[name] || {});
+    if (ids.length === 0) {
+      listEl.innerHTML = '<div style="text-align:center; padding:16px; color:#64748B;">No hidden records in this table.</div>';
+    } else {
+      var html = "";
+      for (var i = 0; i < ids.length; i++) {
+        html += '<div class="hidden-item-row">' +
+          '<span>' + hiddenRowLabel(name, ids[i]) + '</span>' +
+          '<button type="button" class="btn-sm btn-restore" data-restore-name="' + name + '" data-restore-id="' + esc(ids[i]) + '">Restore</button>' +
+        '</div>';
+      }
+      listEl.innerHTML = html;
+    }
+    document.getElementById("hidden-overlay").classList.remove("hidden");
+  }
+
+  function closeHiddenModal() {
+    document.getElementById("hidden-overlay").classList.add("hidden");
+  }
+
+  // Restore one specific hidden row back into its table
+  function restoreHiddenRow(name, id) {
+    if (!hiddenRows[name] || !hiddenRows[name][id]) return;
+    delete hiddenRows[name][id];
+    renderTable(name);
+    note("Record restored to table.");
+
+    if (Object.keys(hiddenRows[name]).length === 0) {
+      closeHiddenModal();
+    } else {
+      openHiddenModal(name);
+    }
+  }
+
+  document.getElementById("hidden-close").onclick = closeHiddenModal;
+
+  document.getElementById("hidden-overlay").onclick = function (e) {
+    if (e.target === this) { closeHiddenModal(); }
+  };
+
+  document.getElementById("hidden-items-list").onclick = function (e) {
+    var btn = e.target.closest("[data-restore-id]");
+    if (!btn) return;
+    restoreHiddenRow(btn.getAttribute("data-restore-name"), btn.getAttribute("data-restore-id"));
+  };
 
   // Click handler for Restore buttons inside the Deleted Records table is further below.
 
@@ -1107,7 +1222,7 @@
     }
   };
 
-  // Actions delegate (Add, Edit, Hide, Delete)
+  // Actions delegate (Add, Edit, Hide, Unhide all, Unhide specific, Delete)
   document.querySelector(".content").onclick = async function (e) {
     var btn = e.target.closest("[data-act]");
     if (!btn) { return; }
@@ -1118,6 +1233,15 @@
 
     if (act == "add") { openForm(name, null); }
     if (act == "edit") { openForm(name, id); }
+    if (act == "unhide-all") {
+      if (currentUser.role === "admin") { return; }
+      hiddenRows[name] = {};
+      renderTable(name);
+      note("All hidden records restored.");
+    }
+    if (act == "unhide-specific") {
+      openHiddenModal(name);
+    }
     if (act == "hide") {
       // Admins do not hide records (they use Delete instead)
       if (currentUser.role === "admin") { return; }
