@@ -121,10 +121,16 @@ if ($method === 'POST') {
             jsonResponse(false, 'Unit ID is required.', null, 400);
         }
 
+        // Keep the unit's current status unless a status is explicitly sent
+        $currentStmt = $pdo->prepare("SELECT status FROM units WHERE unit_id = ?");
+        $currentStmt->execute([$id]);
+        $currentStatus = $currentStmt->fetchColumn() ?: 'Vacant';
+        $defaultStatus = ($currentStatus === 'Vacant') ? 'Available' : $currentStatus;
+
         $number = trim($data['number'] ?? '');
         $type = trim($data['type'] ?? 'Studio');
         $rent = floatval($data['rent'] ?? 0);
-        $status = trim($data['status'] ?? 'Available');
+        $status = isset($data['status']) ? trim($data['status']) : $defaultStatus;
         $floor = intval($data['floor_no'] ?? 1);
         $capacity = intval($data['capacity'] ?? 2);
 
