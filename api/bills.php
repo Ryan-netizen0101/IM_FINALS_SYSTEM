@@ -10,6 +10,16 @@ header('Content-Type: application/json');
 $method = $_SERVER['REQUEST_METHOD'];
 $action = $_GET['action'] ?? '';
 
+// GET: Utility rates, used by the bill form to show the amount live
+if ($method === 'GET' && $action === 'rates') {
+    $rates = $pdo->query("SELECT utility_name, rate_per_unit FROM utility_types")
+                 ->fetchAll(PDO::FETCH_KEY_PAIR);
+    foreach ($rates as $name => $rate) {
+        $rates[$name] = floatval($rate);
+    }
+    jsonResponse(true, 'Rates retrieved', $rates);
+}
+
 // GET: Fetch all utility bills
 if ($method === 'GET') {
     try {
@@ -76,7 +86,7 @@ if ($method === 'POST') {
         $tenantId = intval($data['tenant'] ?? 0);
         $utilityName = trim($data['type'] ?? 'Water');
         $period = trim($data['period'] ?? '');
-        $amount = floatval($data['amount'] ?? 0);
+        $units = floatval($data['units_consumed'] ?? 0);
         $dueDate = trim($data['due'] ?? date('Y-m-d'));
         $status = trim($data['status'] ?? 'Unpaid');
 
@@ -87,8 +97,8 @@ if ($method === 'POST') {
         if (empty($period)) {
             $errors['period'] = 'Billing period is required.';
         }
-        if ($amount <= 0) {
-            $errors['amount'] = 'Amount must be greater than 0.';
+        if ($units <= 0) {
+            $errors['units_consumed'] = 'Units consumed must be greater than 0.';
         }
         if (empty($dueDate)) {
             $errors['due'] = 'Due date is required.';
@@ -103,15 +113,16 @@ if ($method === 'POST') {
         try {
             $pdo->beginTransaction();
 
-            // Find utility type ID
-            $uTypeStmt = $pdo->prepare("SELECT utility_type_id FROM utility_types WHERE utility_name = ? LIMIT 1");
+            // Get the utility type and its rate (the rate comes from the database, not the form)
+            $uTypeStmt = $pdo->prepare("SELECT utility_type_id, rate_per_unit FROM utility_types WHERE utility_name = ? LIMIT 1");
             $uTypeStmt->execute([$utilityName]);
-            $typeId = $uTypeStmt->fetchColumn();
-            if (!$typeId) {
-                $insType = $pdo->prepare("INSERT INTO utility_types (utility_name, measure_unit, rate_per_unit) VALUES (?, 'unit', 10.00)");
-                $insType->execute([$utilityName]);
-                $typeId = $pdo->lastInsertId();
+            $typeRow = $uTypeStmt->fetch();
+            if (!$typeRow) {
+                $pdo->rollBack();
+                jsonResponse(false, "No rate is set up for '{$utilityName}'.", null, 400);
             }
+            $typeId = $typeRow['utility_type_id'];
+            $amount = round($units * floatval($typeRow['rate_per_unit']), 2);
 
             // Find tenant lease
             $lStmt = $pdo->prepare("SELECT lease_id FROM leases WHERE tenant_id = ? ORDER BY (status = 'Active') DESC, lease_id DESC LIMIT 1");
@@ -134,9 +145,9 @@ if ($method === 'POST') {
 
             $stmt = $pdo->prepare("
                 INSERT INTO utility_bills (lease_id, utility_type_id, billing_month, units_consumed, amount_due, due_date, status)
-                VALUES (?, ?, ?, 1.0, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
             ");
-            $stmt->execute([$leaseId, $typeId, $billingMonth, $amount, $dueDate, $status]);
+            $stmt->execute([$leaseId, $typeId, $billingMonth, $units, $amount, $dueDate, $status]);
             $billId = $pdo->lastInsertId();
 
             if ($status === 'Paid') {
@@ -148,7 +159,7 @@ if ($method === 'POST') {
             }
 
             $pdo->commit();
-            jsonResponse(true, 'Utility bill recorded successfully', ['id' => $billId], 201);
+            jsonResponse(true, 'Utility bill recorded successfully', ['id' => $billId, 'amount' => $amount], 201);
         } catch (PDOException $e) {
             $pdo->rollBack();
             jsonResponse(false, 'Failed to save bill: ' . $e->getMessage(), null, 500);
@@ -164,7 +175,7 @@ if ($method === 'POST') {
         $tenantId = intval($data['tenant'] ?? 0);
         $utilityName = trim($data['type'] ?? 'Water');
         $period = trim($data['period'] ?? '');
-        $amount = floatval($data['amount'] ?? 0);
+        $units = floatval($data['units_consumed'] ?? 0);
         $dueDate = trim($data['due'] ?? date('Y-m-d'));
         $status = trim($data['status'] ?? 'Unpaid');
 
@@ -175,19 +186,8 @@ if ($method === 'POST') {
         if (empty($period)) {
             $errors['period'] = 'Billing period is required.';
         }
-        if ($amount <= 0) {
-            $errors['amount'] = 'Amount must be greater than 0.';
-        }
-
-        // Staff permission check: staff cannot change billing rates/amounts
-        $currentUserRole = $_SESSION['role'] ?? 'staff';
-        if ($currentUserRole === 'staff') {
-            $curr = $pdo->prepare("SELECT amount_due FROM utility_bills WHERE bill_id = ?");
-            $curr->execute([$id]);
-            $currAmount = floatval($curr->fetchColumn());
-            if (abs($currAmount - $amount) > 0.01) {
-                jsonResponse(false, 'Staff cannot change billing rates or bill amounts. Rate updates are an admin role.', null, 403);
-            }
+        if ($units <= 0) {
+            $errors['units_consumed'] = 'Units consumed must be greater than 0.';
         }
 
         if (!empty($errors)) {
@@ -199,25 +199,32 @@ if ($method === 'POST') {
         try {
             $pdo->beginTransaction();
 
-            $uTypeStmt = $pdo->prepare("SELECT utility_type_id FROM utility_types WHERE utility_name = ? LIMIT 1");
+            $uTypeStmt = $pdo->prepare("SELECT utility_type_id, rate_per_unit FROM utility_types WHERE utility_name = ? LIMIT 1");
             $uTypeStmt->execute([$utilityName]);
-            $typeId = $uTypeStmt->fetchColumn() ?: 1;
+            $typeRow = $uTypeStmt->fetch();
+            if (!$typeRow) {
+                $pdo->rollBack();
+                jsonResponse(false, "No rate is set up for '{$utilityName}'.", null, 400);
+            }
+            $typeId = $typeRow['utility_type_id'];
+            $amount = round($units * floatval($typeRow['rate_per_unit']), 2);
 
             $lStmt = $pdo->prepare("SELECT lease_id FROM leases WHERE tenant_id = ? ORDER BY (status = 'Active') DESC, lease_id DESC LIMIT 1");
             $lStmt->execute([$tenantId]);
             $leaseId = $lStmt->fetchColumn();
 
             $stmt = $pdo->prepare("
-                UPDATE utility_bills 
+                UPDATE utility_bills
                 SET lease_id = COALESCE(NULLIF(?, 0), lease_id),
                     utility_type_id = ?,
                     billing_month = ?,
+                    units_consumed = ?,
                     amount_due = ?,
                     due_date = ?,
                     status = ?
                 WHERE bill_id = ?
             ");
-            $stmt->execute([$leaseId, $typeId, $billingMonth, $amount, $dueDate, $status, $id]);
+            $stmt->execute([$leaseId, $typeId, $billingMonth, $units, $amount, $dueDate, $status, $id]);
 
             if ($status === 'Paid') {
                 $chkPay = $pdo->prepare("SELECT COUNT(*) FROM utility_payments WHERE bill_id = ?");
@@ -229,7 +236,7 @@ if ($method === 'POST') {
             }
 
             $pdo->commit();
-            jsonResponse(true, 'Utility bill updated successfully');
+            jsonResponse(true, 'Utility bill updated successfully', ['amount' => $amount]);
         } catch (PDOException $e) {
             $pdo->rollBack();
             jsonResponse(false, 'Failed to update bill: ' . $e->getMessage(), null, 500);
