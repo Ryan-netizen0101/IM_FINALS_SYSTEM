@@ -355,7 +355,7 @@
         { k: "tenant", l: "Tenant", t: "select", ref: 1, o: function () { return tenantOptions(); } },
         { k: "type", l: "Utility", t: "select", o: function () { return list(["Water", "Electricity", "Internet"]); } },
         { k: "period", l: "Billing period", t: "month", req: 1 },
-        { k: "units_consumed", l: "Units consumed", t: "number", req: 1 },
+        { k: "units_consumed", l: "Units consumed", t: "number", req: 0 },
         { k: "amount", l: "Amount (PHP)", t: "number", req: 0 },
         { k: "due", l: "Due date", t: "date", req: 1 },
         { k: "status", l: "Status", t: "select", o: function () { return list(["Unpaid", "Paid", "Overdue", "Partial"]); } }
@@ -379,6 +379,9 @@
   var hiddenRows = {};
   var simpleTableCache = {};
   var utilityRates = {};
+
+  // Fixed monthly charge for Internet (must match INTERNET_FIXED_AMOUNT in bills.php)
+  var INTERNET_FIXED_AMOUNT = 1200.00;
 
   // Staff-only Unhide buttons: created only for staff, and only when rows are hidden
   function updateStaffUnhideButton(name) {
@@ -429,13 +432,23 @@
     }
   }
 
-  // Fills the Amount box from units × rate. The box is read-only.
+  // Fills the Amount box. Internet is a fixed charge of PHP 1,200; Water and Electricity use units × rate.
   function updateBillAmount() {
     var typeEl = document.getElementById("f-type");
     var unitsEl = document.getElementById("f-units_consumed");
     var amountEl = document.getElementById("f-amount");
     if (!typeEl || !unitsEl || !amountEl) return;
     var rate = utilityRates[typeEl.value];
+    var isFixed = (typeEl.value === "Internet");
+
+    // Hide the units field for Internet, since it isn't based on units
+    var unitsRow = unitsEl.closest(".field");
+    if (unitsRow) { unitsRow.style.display = isFixed ? "none" : ""; }
+
+    if (isFixed) {
+      amountEl.value = INTERNET_FIXED_AMOUNT.toFixed(2);
+      return;
+    }
     var units = parseFloat(unitsEl.value);
     amountEl.value = (rate && units > 0) ? (Math.round(units * rate * 100) / 100).toFixed(2) : "";
   }
