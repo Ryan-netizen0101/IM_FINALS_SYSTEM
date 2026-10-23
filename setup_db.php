@@ -18,13 +18,14 @@ try {
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
     ]);
 
-    // Create database if not exists
-    $pdo->exec("CREATE DATABASE IF NOT EXISTS `{$db_name}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
-    $pdo->exec("USE `{$db_name}`");
-    $messages[] = "Connected to MySQL server and selected database `{$db_name}`.";
+    // Reset database: drop if exists then create fresh
+    $pdo->exec("DROP DATABASE IF EXISTS {$db_name}");
+    $pdo->exec("CREATE DATABASE {$db_name} CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+    $pdo->exec("USE {$db_name}");
+    $messages[] = "Database {$db_name} reset and selected.";
 
     // Read SQL file
-    $sqlFile = __DIR__ . DIRECTORY_SEPARATOR . 'tenant_billing_system.sql';
+    $sqlFile = _DIR_ . DIRECTORY_SEPARATOR . 'tenant_billing_system.sql';
     if (!file_exists($sqlFile)) {
         throw new Exception("tenant_billing_system.sql file not found!");
     }
@@ -87,7 +88,7 @@ try {
     $tables = ['users', 'tenants', 'units', 'utility_types', 'leases', 'rent_payments', 'utility_bills', 'utility_payments'];
     foreach ($tables as $tbl) {
         try {
-            $cnt = $pdo->query("SELECT COUNT(*) FROM `{$tbl}`")->fetchColumn();
+            $cnt = $pdo->query("SELECT COUNT(*) FROM {$tbl}")->fetchColumn();
             $tableCounts[$tbl] = $cnt;
         } catch (Exception $e) {
             $tableCounts[$tbl] = 'Error: ' . $e->getMessage();
