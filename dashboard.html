@@ -355,7 +355,8 @@
         { k: "tenant", l: "Tenant", t: "select", ref: 1, o: function () { return tenantOptions(); } },
         { k: "type", l: "Utility", t: "select", o: function () { return list(["Water", "Electricity", "Internet"]); } },
         { k: "period", l: "Billing period", t: "month", req: 1 },
-        { k: "amount", l: "Amount (PHP)", t: "number", req: 1 },
+        { k: "units_consumed", l: "Units consumed", t: "number", req: 1 },
+        { k: "amount", l: "Amount (PHP)", t: "number", req: 0 },
         { k: "due", l: "Due date", t: "date", req: 1 },
         { k: "status", l: "Status", t: "select", o: function () { return list(["Unpaid", "Paid", "Overdue", "Partial"]); } }
       ]
@@ -377,6 +378,7 @@
   var sortState = {};
   var hiddenRows = {};
   var simpleTableCache = {};
+  var utilityRates = {};
 
   // Staff-only Unhide buttons: created only for staff, and only when rows are hidden
   function updateStaffUnhideButton(name) {
@@ -414,6 +416,28 @@
     specBtn.textContent = "Unhide specific (" + hiddenCount + ")";
     allBtn.style.display = showButtons ? "inline-flex" : "none";
     specBtn.style.display = showButtons ? "inline-flex" : "none";
+  }
+
+  // Loads utility rates (PHP per unit) so the bill form can show the amount live
+  async function loadUtilityRates() {
+    try {
+      var res = await fetch("api/bills.php?action=rates", { credentials: "include" });
+      var json = await res.json();
+      if (json.success) { utilityRates = json.data || {}; }
+    } catch (e) {
+      console.error("Could not load utility rates:", e);
+    }
+  }
+
+  // Fills the Amount box from units × rate. The box is read-only.
+  function updateBillAmount() {
+    var typeEl = document.getElementById("f-type");
+    var unitsEl = document.getElementById("f-units_consumed");
+    var amountEl = document.getElementById("f-amount");
+    if (!typeEl || !unitsEl || !amountEl) return;
+    var rate = utilityRates[typeEl.value];
+    var units = parseFloat(unitsEl.value);
+    amountEl.value = (rate && units > 0) ? (Math.round(units * rate * 100) / 100).toFixed(2) : "";
   }
 
   // Session & Auth Handling
@@ -1081,7 +1105,7 @@
         }
         input += "</select>";
       } else {
-        input = '<input type="' + f.t + '" id="f-' + f.k + '" value="' + esc(v) + '"' + (f.t == "number" ? ' min="1" step="0.01"' : "") + ">";
+        input = '<input type="' + f.t + '" id="f-' + f.k + '" value="' + esc(v) + '"' + (f.t == "number" ? ' min="0" step="0.01"' : "") + ">";
       }
       html += '<div class="field"><label for="f-' + f.k + '">' + f.l + "</label>" + input +
         '<div class="error" id="e-' + f.k + '"></div></div>';
@@ -1106,16 +1130,15 @@
       }
     }
 
-    // Requirement 2: Staff cannot change billing rates on Utility bills
-    if (name === "bills" && currentUser.role === "staff") {
-      var billAmountInput = document.getElementById("f-amount");
-      if (billAmountInput) {
-        billAmountInput.readOnly = true;
-        var hint = document.createElement("div");
-        hint.className = "field-hint";
-        hint.textContent = "Billing rates are locked for staff (Admin only). Staff can update status & due date.";
-        billAmountInput.parentNode.appendChild(hint);
-      }
+    // Bills: Amount is calculated from units and the utility rate, so it is read-only for everyone
+    if (name === "bills") {
+      var amtBox = document.getElementById("f-amount");
+      var typeBox = document.getElementById("f-type");
+      var unitsBox = document.getElementById("f-units_consumed");
+      if (amtBox) { amtBox.readOnly = true; }
+      if (typeBox) { typeBox.addEventListener("change", updateBillAmount); }
+      if (unitsBox) { unitsBox.addEventListener("input", updateBillAmount); }
+      updateBillAmount();
     }
 
     document.getElementById("overlay").classList.remove("hidden");
@@ -1143,7 +1166,7 @@
 
       if (f.req && val == "") {
         msg = "This field is required.";
-      } else if (f.t == "number" && !(Number(val) > 0)) {
+      } else if (f.t == "number" && f.req && !(Number(val) > 0)) {
         msg = "Enter an amount greater than 0.";
       } else if (f.pat && !f.pat.test(val)) {
         msg = f.msg;
@@ -1638,6 +1661,7 @@
   setupTable("units");
   setupTable("payments");
   setupTable("bills");
+  loadUtilityRates();
   checkAuth().then(function () { fetchAll(); });
 </script>
 </body>
