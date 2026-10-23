@@ -10,6 +10,9 @@ header('Content-Type: application/json');
 $method = $_SERVER['REQUEST_METHOD'];
 $action = $_GET['action'] ?? '';
 
+// Fixed monthly charge for Internet (PHP)
+define('INTERNET_FIXED_AMOUNT', 1200.00);
+
 // GET: Utility rates, used by the bill form to show the amount live
 if ($method === 'GET' && $action === 'rates') {
     $rates = $pdo->query("SELECT utility_name, rate_per_unit FROM utility_types")
@@ -17,6 +20,7 @@ if ($method === 'GET' && $action === 'rates') {
     foreach ($rates as $name => $rate) {
         $rates[$name] = floatval($rate);
     }
+    $rates['Internet'] = INTERNET_FIXED_AMOUNT;
     jsonResponse(true, 'Rates retrieved', $rates);
 }
 
@@ -97,7 +101,8 @@ if ($method === 'POST') {
         if (empty($period)) {
             $errors['period'] = 'Billing period is required.';
         }
-        if ($units <= 0) {
+        // Internet is a fixed charge, so it doesn't need units
+        if ($units <= 0 && $utilityName !== 'Internet') {
             $errors['units_consumed'] = 'Units consumed must be greater than 0.';
         }
         if (empty($dueDate)) {
@@ -113,7 +118,7 @@ if ($method === 'POST') {
         try {
             $pdo->beginTransaction();
 
-            // Get the utility type and its rate (the rate comes from the database, not the form)
+            // Get the utility type (its ID and, for Water/Electricity, its rate)
             $uTypeStmt = $pdo->prepare("SELECT utility_type_id, rate_per_unit FROM utility_types WHERE utility_name = ? LIMIT 1");
             $uTypeStmt->execute([$utilityName]);
             $typeRow = $uTypeStmt->fetch();
@@ -122,7 +127,14 @@ if ($method === 'POST') {
                 jsonResponse(false, "No rate is set up for '{$utilityName}'.", null, 400);
             }
             $typeId = $typeRow['utility_type_id'];
-            $amount = round($units * floatval($typeRow['rate_per_unit']), 2);
+
+            if ($utilityName === 'Internet') {
+                // Internet is a fixed monthly charge of PHP 1,200
+                $units = 1.0;
+                $amount = INTERNET_FIXED_AMOUNT;
+            } else {
+                $amount = round($units * floatval($typeRow['rate_per_unit']), 2);
+            }
 
             // Find tenant lease
             $lStmt = $pdo->prepare("SELECT lease_id FROM leases WHERE tenant_id = ? ORDER BY (status = 'Active') DESC, lease_id DESC LIMIT 1");
@@ -186,7 +198,8 @@ if ($method === 'POST') {
         if (empty($period)) {
             $errors['period'] = 'Billing period is required.';
         }
-        if ($units <= 0) {
+        // Internet is a fixed charge, so it doesn't need units
+        if ($units <= 0 && $utilityName !== 'Internet') {
             $errors['units_consumed'] = 'Units consumed must be greater than 0.';
         }
 
@@ -207,7 +220,14 @@ if ($method === 'POST') {
                 jsonResponse(false, "No rate is set up for '{$utilityName}'.", null, 400);
             }
             $typeId = $typeRow['utility_type_id'];
-            $amount = round($units * floatval($typeRow['rate_per_unit']), 2);
+
+            if ($utilityName === 'Internet') {
+                // Internet is a fixed monthly charge of PHP 1,200
+                $units = 1.0;
+                $amount = INTERNET_FIXED_AMOUNT;
+            } else {
+                $amount = round($units * floatval($typeRow['rate_per_unit']), 2);
+            }
 
             $lStmt = $pdo->prepare("SELECT lease_id FROM leases WHERE tenant_id = ? ORDER BY (status = 'Active') DESC, lease_id DESC LIMIT 1");
             $lStmt->execute([$tenantId]);
