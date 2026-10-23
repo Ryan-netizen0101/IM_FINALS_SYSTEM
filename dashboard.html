@@ -330,8 +330,7 @@
       fields: [
         { k: "number", l: "Unit number", t: "text", req: 1 },
         { k: "type", l: "Type", t: "select", o: function () { return list(["Studio", "Single Room", "1-Bedroom", "2-Bedroom", "Family 2BR", "Bedspace"]); } },
-        { k: "rent", l: "Monthly rent (PHP)", t: "number", req: 1 },
-        { k: "status", l: "Status", t: "select", o: function () { return list(["Available", "Occupied"]); } }
+        { k: "rent", l: "Monthly rent (PHP)", t: "number", req: 1 }
       ]
     },
     payments: {
